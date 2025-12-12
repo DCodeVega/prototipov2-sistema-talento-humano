@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Completar Ficha TALENTO{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-id-card me-2"></i> Completar Ficha TALENTO
+        </h1>
+        <p class="text-muted">Complete todas las secciones requeridas de su ficha</p>
+    </div>
+</div>
+
+<!-- Indicador de progreso -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" 
+                         style="width: {{ progreso }}%;" aria-valuenow="{{ progreso }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ progreso }}% Completado
+                    </div>
+                </div>
+                <p class="mb-0 text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Complete todas las secciones marcadas como obligatorias. Puede guardar y continuar después.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tarjetas de secciones -->
+<div class="row">
+    <!-- Sección 1: Datos Personales -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 {{ 'border-success' if secciones.datos_personales else 'border-primary' }}">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-{{ 'success' if secciones.datos_personales else 'primary' }} text-white rounded-circle p-3 me-3">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1. Datos Personales</h5>
+                        <p class="text-muted mb-0">Información personal y de contacto</p>
+                    </div>
+                </div>
+                <p>Complete sus datos personales, información adicional y parientes.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{ 'success' if secciones.datos_personales else 'warning' }}">
+                        {% if secciones.datos_personales %}✅ Completado{% else %}⚠️ Pendiente{% endif %}
+                    </span>
+                    <a href="{{ url_for('funcionario_datos_personales') }}" 
+                       class="btn btn-{{ 'success' if secciones.datos_personales else 'primary' }} btn-sm">
+                        {% if secciones.datos_personales %}
+                            <i class="fas fa-edit me-1"></i> Editar
+                        {% else %}
+                            <i class="fas fa-play me-1"></i> Comenzar
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección 2: Formación Académica -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 {{ 'border-success' if secciones.formacion else 'border-primary' }}">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-{{ 'success' if secciones.formacion else 'primary' }} text-white rounded-circle p-3 me-3">
+                        <i class="fas fa-graduation-cap fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">2. Formación Académica</h5>
+                        <p class="text-muted mb-0">Estudios, cursos, idiomas</p>
+                    </div>
+                </div>
+                <p>Registre su formación: bachillerato, estudios superiores, cursos e idiomas.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{ 'success' if secciones.formacion else 'warning' }}">
+                        {% if secciones.formacion %}✅ Completado{% else %}⚠️ Pendiente{% endif %}
+                    </span>
+                    <a href="{{ url_for('funcionario_formacion_academica') }}" 
+                       class="btn btn-{{ 'success' if secciones.formacion else 'primary' }} btn-sm">
+                        {% if secciones.formacion %}
+                            <i class="fas fa-edit me-1"></i> Editar
+                        {% else %}
+                            <i class="fas fa-play me-1"></i> Comenzar
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección 3: Seguro Social -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 {{ 'border-success' if secciones.seguro_social else 'border-primary' }}">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-{{ 'success' if secciones.seguro_social else 'primary' }} text-white rounded-circle p-3 me-3">
+                        <i class="fas fa-heartbeat fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">3. Seguro Social</h5>
+                        <p class="text-muted mb-0">Afiliación a caja de salud</p>
+                    </div>
+                </div>
+                <p>Registre su información de afiliación al seguro médico.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{ 'success' if secciones.seguro_social else 'warning' }}">
+                        {% if secciones.seguro_social %}✅ Completado{% else %}⚠️ Pendiente{% endif %}
+                    </span>
+                    <a href="{{ url_for('funcionario_seguro_social') }}" 
+                       class="btn btn-{{ 'success' if secciones.seguro_social else 'primary' }} btn-sm">
+                        {% if secciones.seguro_social %}
+                            <i class="fas fa-edit me-1"></i> Editar
+                        {% else %}
+                            <i class="fas fa-play me-1"></i> Comenzar
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección 4: Experiencia Laboral -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 {{ 'border-success' if secciones.experiencia else 'border-primary' }}">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-{{ 'success' if secciones.experiencia else 'primary' }} text-white rounded-circle p-3 me-3">
+                        <i class="fas fa-briefcase fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">4. Experiencia Laboral</h5>
+                        <p class="text-muted mb-0">Historial laboral y capacitaciones</p>
+                    </div>
+                </div>
+                <p>Registre su experiencia laboral previa y capacitaciones impartidas.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{ 'success' if secciones.experiencia else 'warning' }}">
+                        {% if secciones.experiencia %}✅ Completado{% else %}⚠️ Pendiente{% endif %}
+                    </span>
+                    <a href="{{ url_for('funcionario_experiencia_laboral') }}" 
+                       class="btn btn-{{ 'success' if secciones.experiencia else 'primary' }} btn-sm">
+                        {% if secciones.experiencia %}
+                            <i class="fas fa-edit me-1"></i> Editar
+                        {% else %}
+                            <i class="fas fa-play me-1"></i> Comenzar
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-forward me-2"></i> Próximos Pasos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
+                                <h6>Revisar Formulario</h6>
+                                <p class="small text-muted">Revise todos los datos antes de enviar</p>
+                                <a href="{{ url_for('funcionario_revisar_formulario') }}" 
+                                   class="btn btn-outline-primary btn-sm" disabled>
+                                    Próximamente
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-print fa-2x text-success mb-2"></i>
+                                <h6>Imprimir Formulario</h6>
+                                <p class="small text-muted">Genere PDF para presentación</p>
+                                <a href="{{ url_for('funcionario_imprimir_formulario') }}" 
+                                   class="btn btn-outline-success btn-sm" disabled>
+                                    Próximamente
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-contract fa-2x text-info mb-2"></i>
+                                <h6>Ver N° Trámite</h6>
+                                <p class="small text-muted">Obtenga su número de trámite</p>
+                                <a href="{{ url_for('funcionario_tramite') }}" 
+                                   class="btn btn-outline-info btn-sm" disabled>
+                                    Próximamente
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6><i class="fas fa-clock me-2"></i> Plazo de Completado</h6>
+            <p class="mb-0">
+                Recuerde que tiene <strong>5 días hábiles</strong> para completar toda su ficha TALENTO.
+                Puede guardar su progreso en cualquier momento y continuar después.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
