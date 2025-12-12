@@ -104,6 +104,189 @@ class Database:
         )
         ''')
         
+        cursor.execute('''
+    CREATE TABLE IF NOT EXISTS datos_adicionales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    genero TEXT,
+    expedido_en TEXT,
+    fecha_nacimiento DATE,
+    pais_nacimiento TEXT,
+    depto_nacimiento TEXT,
+    provincia_nacimiento TEXT,
+    lugar_nacimiento TEXT,
+    nro_libreta_militar TEXT,
+    afp TEXT,
+    nro_nua TEXT,
+    tipo_sangre TEXT,
+    fecha_caducidad_ci DATE,
+    estado_civil TEXT,
+    nro_hijos INTEGER DEFAULT 0,
+    nro_dependientes INTEGER DEFAULT 0,
+    direccion_domicilio TEXT,
+    nro_domicilio TEXT,
+    zona_domicilio TEXT,
+    ciudad_localidad TEXT,
+    tipo_vivienda TEXT,
+    nombre_tipo_vivienda TEXT,
+    piso TEXT,
+    depto TEXT,
+    casilla TEXT,
+    correo_electronico1 TEXT,
+    correo_electronico2 TEXT,
+    telefono_fijo1 TEXT,
+    telefono_fijo2 TEXT,
+    telefono_celular1 TEXT,
+    telefono_celular2 TEXT,
+    nro_carrera_administrativa TEXT,
+    fecha_cas DATE,
+    anos_cas INTEGER,
+    meses_cas INTEGER,
+    dias_cas INTEGER,
+    licencia_conducir TEXT,
+    categoria_licencia TEXT,
+    emergencia_contacto TEXT,
+    nro_declaracion_jurada TEXT,
+    fecha_declaracion_jurada DATE,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para parientes
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS parientes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    parentesco TEXT,
+    primer_apellido TEXT,
+    segundo_apellido TEXT,
+    nombres TEXT,
+    nacionalidad TEXT,
+    telefono TEXT,
+    genero TEXT,
+    fecha_nacimiento DATE,
+    tipo_identificacion TEXT,
+    numero_identificacion TEXT,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para formación académica
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS formacion_academica (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    pais_estudio TEXT,
+    estado_instruccion TEXT,
+    nivel_instruccion TEXT,
+    area TEXT,
+    tipo_entidad_academica TEXT,
+    institucion_academica TEXT,
+    nombre_institucion TEXT,
+    carrera TEXT,
+    titulado TEXT,
+    documento_respaldo TEXT,
+    detalle_documento TEXT,
+    fecha_inicio DATE,
+    fecha_final DATE,
+    nro_titulo_academico TEXT,
+    fecha_emision_titulo DATE,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para bachillerato
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS bachillerato (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    es_bachiller TEXT,
+    ano INTEGER,
+    unidad_educativa TEXT,
+    ultimo_curso_vencido TEXT,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para cursos
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS cursos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    nivel_instruccion TEXT,
+    area TEXT,
+    nombre_curso TEXT,
+    tipo_entidad_academica TEXT,
+    institucion_academica TEXT,
+    nro_horas INTEGER,
+    fecha_inicio DATE,
+    fecha_final DATE,
+    documento_respaldo TEXT,
+    detalle_documento TEXT,
+    pais_estudio TEXT,
+    depto_estudio TEXT,
+    capacitacion TEXT,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para idiomas
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS idiomas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    idioma TEXT,
+    habla TEXT,
+    escribe TEXT,
+    lee TEXT,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para experiencia laboral
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS experiencia_laboral (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    entidad_empresa TEXT,
+    area_departamento TEXT,
+    tipo_entidad TEXT,
+    puesto TEXT,
+    jerarquia TEXT,
+    cargo_mando TEXT,
+    nro_dependientes INTEGER,
+    fecha_inicio DATE,
+    fecha_final DATE,
+    forma_ingreso TEXT,
+    causa_retiro TEXT,
+    nit_empresa TEXT,
+    haber_basico REAL,
+    pais TEXT,
+    descripcion_labores TEXT,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+# Tabla para capacitaciones impartidas
+        cursor.execute('''
+CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    funcionario_id INTEGER NOT NULL,
+    tipo_entidad_academica TEXT,
+    institucion_academica TEXT,
+    nombre_institucion TEXT,
+    tipo_capacitacion TEXT,
+    carrera TEXT,
+    asignatura_tema TEXT,
+    nro_horas INTEGER,
+    fecha_desde DATE,
+    fecha_hasta DATE,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+)
+''')
+
+        print("✅ Tablas de datos de funcionario creadas")
+        
         # Insertar usuario admin por defecto
         cursor.execute("SELECT * FROM usuarios WHERE username = 'admin'")
         if not cursor.fetchone():

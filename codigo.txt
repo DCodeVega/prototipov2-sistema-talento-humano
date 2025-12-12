@@ -1,0 +1,40 @@
+Basándome en el PDF, los roles tienen estas funcionalidades:
+
+1. ADMINISTRADOR (ya tenemos bastante)
+✅ Registrar información básica del funcionario
+
+✅ Generar usuario/clave automático
+
+✅ Revisar formulario TALENTO
+
+✅ Revisión de documentos
+
+✅ Baja de funcionarios
+
+❌ FALTAN: Migración de datos, Pantallas web para datos migrados
+
+2. FUNCIONARIO (fase 1 - según página 6)
+✅ Ingreso a oficina virtual (login)
+
+❌ Registrar información personal (completar ficha)
+
+❌ Registrar formación y conocimiento
+
+❌ Registrar seguro social
+
+❌ Registrar experiencia laboral y capacitación
+
+❌ Desplegar formulario y documentos de soporte
+
+❌ Imprimir formulario
+
+❌ Visualizar número trámite
+
+❌ Imprimir número trámite
+
+3. JEFE DE DEPARTAMENTO
+❌ Visualizar formulario por el Jefe
+
+❌ Revisar documentos por el jefe
+
+❌ Aprobar documento por el Jefe
