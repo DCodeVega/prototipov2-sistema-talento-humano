@@ -38,3 +38,9 @@ Basándome en el PDF, los roles tienen estas funcionalidades:
 ❌ Revisar documentos por el jefe
 
 ❌ Aprobar documento por el Jefe
+
+Usuario Aplicación:	hernan.sanchez
+Clave Temporal:	12345678
+(CI del funcionario)
+Correo Institucional:	hernan.sanchez@gobierno.talento.bo
+Estado Usuario:	Usuario Activo
