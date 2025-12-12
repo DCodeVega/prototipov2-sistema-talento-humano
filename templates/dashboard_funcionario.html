@@ -6,7 +6,7 @@
 <div class="row mb-4">
     <div class="col-12">
         <h1 class="h3 mb-0">
-            <i class="fas fa-user-tie me-2"></i> Mi Panel
+            <i class="fas fa-user-tie me-2"></i> Mi Panel - {{ funcionario['primer_nombre'] }} {{ funcionario['primer_apellido'] }}
         </h1>
         <p class="text-muted">Bienvenido al sistema Talento Humano</p>
     </div>
@@ -19,38 +19,108 @@
             <h5><i class="fas fa-exclamation-triangle me-2"></i> Acción Requerida</h5>
             <p class="mb-0">
                 Debe completar su ficha TALENTO dentro de los próximos <strong>5 días hábiles</strong>.
-                <a href="#" class="alert-link">Haga clic aquí para completarla</a>.
+                <a href="{{ url_for('funcionario_completar_ficha') }}" class="alert-link">Haga clic aquí para completarla</a>.
             </p>
         </div>
     </div>
 </div>
 {% endif %}
 
+<!-- Indicador de progreso -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i> Progreso de mi Ficha TALENTO</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" 
+                         style="width: {{ progreso }}%;" aria-valuenow="{{ progreso }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ progreso }}% Completado
+                    </div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-md-3 mb-2">
+                        <div class="card border-{{ 'success' if secciones.datos_personales else 'secondary' }}">
+                            <div class="card-body py-2">
+                                <i class="fas fa-user fa-2x mb-2 text-{{ 'success' if secciones.datos_personales else 'secondary' }}"></i>
+                                <h6>Datos Personales</h6>
+                                <small class="text-{{ 'success' if secciones.datos_personales else 'secondary' }}">
+                                    {% if secciones.datos_personales %}✅ Completado{% else %}❌ Pendiente{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-2">
+                        <div class="card border-{{ 'success' if secciones.formacion else 'secondary' }}">
+                            <div class="card-body py-2">
+                                <i class="fas fa-graduation-cap fa-2x mb-2 text-{{ 'success' if secciones.formacion else 'secondary' }}"></i>
+                                <h6>Formación Académica</h6>
+                                <small class="text-{{ 'success' if secciones.formacion else 'secondary' }}">
+                                    {% if secciones.formacion %}✅ Completado{% else %}❌ Pendiente{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-2">
+                        <div class="card border-{{ 'success' if secciones.seguro_social else 'secondary' }}">
+                            <div class="card-body py-2">
+                                <i class="fas fa-heartbeat fa-2x mb-2 text-{{ 'success' if secciones.seguro_social else 'secondary' }}"></i>
+                                <h6>Seguro Social</h6>
+                                <small class="text-{{ 'success' if secciones.seguro_social else 'secondary' }}">
+                                    {% if secciones.seguro_social %}✅ Completado{% else %}❌ Pendiente{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-2">
+                        <div class="card border-{{ 'success' if secciones.experiencia else 'secondary' }}">
+                            <div class="card-body py-2">
+                                <i class="fas fa-briefcase fa-2x mb-2 text-{{ 'success' if secciones.experiencia else 'secondary' }}"></i>
+                                <h6>Experiencia Laboral</h6>
+                                <small class="text-{{ 'success' if secciones.experiencia else 'secondary' }}">
+                                    {% if secciones.experiencia %}✅ Completado{% else %}❌ Pendiente{% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card text-center">
+        <div class="card text-center h-100">
             <div class="card-body">
                 <div class="bg-primary text-white rounded-circle p-4 d-inline-block mb-3">
                     <i class="fas fa-id-card fa-3x"></i>
                 </div>
-                <h5>Mi Ficha TALENTO</h5>
-                <p class="text-muted">Complete su información</p>
-                <a href="#" class="btn btn-primary">
-                    <i class="fas fa-edit me-1"></i> Completar Ficha
+                <h5>Completar Ficha TALENTO</h5>
+                <p class="text-muted">Complete todos los datos requeridos</p>
+                <a href="{{ url_for('funcionario_completar_ficha') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Continuar Ficha
                 </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card text-center">
+        <div class="card text-center h-100">
             <div class="card-body">
                 <div class="bg-success text-white rounded-circle p-4 d-inline-block mb-3">
                     <i class="fas fa-file-upload fa-3x"></i>
                 </div>
-                <h5>Documentos</h5>
-                <p class="text-muted">Suba documentos requeridos</p>
-                <a href="#" class="btn btn-success">
+                <h5>Documentos de Soporte</h5>
+                <p class="text-muted">Suba los documentos requeridos</p>
+                <a href="{{ url_for('funcionario_documentos') }}" class="btn btn-success">
                     <i class="fas fa-upload me-1"></i> Subir Documentos
                 </a>
             </div>
@@ -58,16 +128,35 @@
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card text-center">
+        <div class="card text-center h-100">
             <div class="card-body">
                 <div class="bg-info text-white rounded-circle p-4 d-inline-block mb-3">
                     <i class="fas fa-history fa-3x"></i>
                 </div>
-                <h5>Mis Trámites</h5>
-                <p class="text-muted">Revise estado de trámites</p>
-                <a href="#" class="btn btn-info">
-                    <i class="fas fa-search me-1"></i> Ver Trámites
+                <h5>Estado de mi Trámite</h5>
+                <p class="text-muted">Revise el estado de su registro</p>
+                <a href="{{ url_for('funcionario_tramite') }}" class="btn btn-info">
+                    <i class="fas fa-search me-1"></i> Ver Estado
                 </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Información Importante</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Tiene <strong>5 días hábiles</strong> para completar su ficha TALENTO.</li>
+                    <li>Los documentos deben ser escaneados en formato PDF o imagen.</li>
+                    <li>Para consultas, contacte al departamento de Recursos Humanos.</li>
+                    <li>Guarde su número de trámite una vez generado.</li>
+                    <li>Puede guardar su progreso y continuar después.</li>
+                </ul>
             </div>
         </div>
     </div>
