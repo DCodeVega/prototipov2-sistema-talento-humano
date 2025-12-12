@@ -389,14 +389,142 @@ def funcionario_activar(ci):
     
     return redirect(url_for('funcionarios_lista'))
 
+# ==================== RUTAS PARA FUNCIONARIO ====================
+
+@app.route('/funcionario/completar-ficha')
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_completar_ficha():
+    """Página principal para completar la ficha TALENTO"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    # Calcular progreso (simulado por ahora)
+    progreso = 25
+    secciones = {
+        'datos_personales': False,
+        'formacion': False,
+        'seguro_social': False,
+        'experiencia': False
+    }
+    
+    return render_template('funcionario/completar_ficha.html', 
+                         funcionario=funcionario,
+                         progreso=progreso,
+                         secciones=secciones)
+
+@app.route('/funcionario/datos-personales', methods=['GET', 'POST'])
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_datos_personales():
+    """Funcionario completa sus datos personales (Actividad 5)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    if request.method == 'POST':
+        # Aquí procesaríamos los datos del formulario
+        flash('Datos personales guardados correctamente', 'success')
+        return redirect(url_for('funcionario_completar_ficha'))
+    
+    return render_template('funcionario/datos_personales.html', funcionario=funcionario)
+
+@app.route('/funcionario/formacion-academica', methods=['GET', 'POST'])
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_formacion_academica():
+    """Funcionario completa formación académica (Actividad 6)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    if request.method == 'POST':
+        flash('Formación académica guardada correctamente', 'success')
+        return redirect(url_for('funcionario_completar_ficha'))
+    
+    return render_template('funcionario/formacion_academica.html', funcionario=funcionario)
+
+@app.route('/funcionario/seguro-social', methods=['GET', 'POST'])
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_seguro_social():
+    """Funcionario completa seguro social (Actividad 7)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    if request.method == 'POST':
+        flash('Seguro social guardado correctamente', 'success')
+        return redirect(url_for('funcionario_completar_ficha'))
+    
+    return render_template('funcionario/seguro_social.html', funcionario=funcionario)
+
+@app.route('/funcionario/experiencia-laboral', methods=['GET', 'POST'])
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_experiencia_laboral():
+    """Funcionario completa experiencia laboral (Actividad 8)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    if request.method == 'POST':
+        flash('Experiencia laboral guardada correctamente', 'success')
+        return redirect(url_for('funcionario_completar_ficha'))
+    
+    return render_template('funcionario/experiencia_laboral.html', funcionario=funcionario)
+
+@app.route('/funcionario/documentos')
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_documentos():
+    """Funcionario sube documentos de soporte"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    return render_template('funcionario/documentos.html', funcionario=funcionario)
+
+@app.route('/funcionario/revisar-formulario')
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_revisar_formulario():
+    """Funcionario revisa formulario completo (Actividad 9)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    return render_template('funcionario/revisar_formulario.html', funcionario=funcionario)
+
+@app.route('/funcionario/imprimir-formulario')
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_imprimir_formulario():
+    """Funcionario imprime formulario (Actividad 10)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    return render_template('funcionario/imprimir_formulario.html', funcionario=funcionario)
+
+@app.route('/funcionario/ver-tramite')
+@auth.login_required
+@auth.role_required(['funcionario'])
+def funcionario_tramite():
+    """Funcionario ve número de trámite (Actividad 11)"""
+    funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
+    
+    # Generar número de trámite ficticio
+    import random
+    nro_tramite = f"TAL-{random.randint(1000, 9999)}-2025"
+    
+    return render_template('funcionario/ver_tramite.html', 
+                         funcionario=funcionario,
+                         nro_tramite=nro_tramite)
+
+# Actualizar el dashboard del funcionario para pasar datos de progreso
 @app.route('/funcionario/dashboard')
 @auth.login_required
 @auth.role_required(['funcionario'])
 def dashboard_funcionario():
     """Dashboard para funcionarios"""
-    # Obtener datos del funcionario
     funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
-    return render_template('dashboard_funcionario.html', funcionario=funcionario)
+    
+    # Calcular progreso (simulado por ahora)
+    progreso = 25
+    secciones = {
+        'datos_personales': False,
+        'formacion': False,
+        'seguro_social': False,
+        'experiencia': False
+    }
+    
+    return render_template('dashboard_funcionario.html', 
+                         funcionario=funcionario,
+                         progreso=progreso,
+                         secciones=secciones)
 
 # ==================== RUTAS DE JEFE ====================
 
