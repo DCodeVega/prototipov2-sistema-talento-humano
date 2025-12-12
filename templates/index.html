@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Sistema Talento Humano{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body py-5">
+                <h1 class="display-4 text-primary mb-4">
+                    <i class="fas fa-users"></i> Sistema Talento Humano
+                </h1>
+                <p class="lead mb-4">
+                    Sistema de Gestión de Recursos Humanos<br>
+                    <strong>FICTICIA SRL</strong>
+                </p>
+                
+                <div class="row mt-5">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-primary">
+                            <div class="card-body">
+                                <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                                <h5>Administradores</h5>
+                                <p class="text-muted">Gestión completa del sistema</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-success">
+                            <div class="card-body">
+                                <i class="fas fa-user-tie fa-3x text-success mb-3"></i>
+                                <h5>Funcionarios</h5>
+                                <p class="text-muted">Complete su ficha TALENTO</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-warning">
+                            <div class="card-body">
+                                <i class="fas fa-user-cog fa-3x text-warning mb-3"></i>
+                                <h5>Jefes</h5>
+                                <p class="text-muted">Revisión y aprobación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

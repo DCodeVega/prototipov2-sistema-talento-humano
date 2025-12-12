@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Funcionario{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-plus me-2"></i> Registrar Nuevo Funcionario
+        </h1>
+        <p class="text-muted">Complete todos los datos del funcionario según formulario R-100</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="formTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#datos-personales" data-bs-toggle="tab">
+                            <i class="fas fa-user me-1"></i> Datos Personales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#datos-resolucion" data-bs-toggle="tab">
+                            <i class="fas fa-file-contract me-1"></i> Datos de Resolución
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#asignar-item" data-bs-toggle="tab">
+                            <i class="fas fa-briefcase me-1"></i> Asignar Ítem
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#archivos" data-bs-toggle="tab">
+                            <i class="fas fa-file-upload me-1"></i> Archivos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('funcionario_nuevo') }}" enctype="multipart/form-data">
+                    <div class="tab-content">
+                        <!-- Pestaña 1: Datos Personales -->
+                        <div class="tab-pane fade show active" id="datos-personales">
+                            <h5 class="mb-4">Datos Personales del Funcionario</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="ci" class="form-label">Número de Identificación *</label>
+                                    <input type="text" class="form-control" id="ci" name="ci" 
+                                           placeholder="Ej: 1234567" maxlength="15" required>
+                                    <small class="text-muted">15 caracteres máximo</small>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipo_identificacion" class="form-label">Tipo Identificación *</label>
+                                    <select class="form-select" id="tipo_identificacion" name="tipo_identificacion" required>
+                                        <option value="CI">Carnet de Identidad (CI)</option>
+                                        <option value="PASAPORTE">Pasaporte</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="primer_apellido" class="form-label">Primer Apellido *</label>
+                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" 
+                                           placeholder="Primer apellido" maxlength="30" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                                    <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" 
+                                           placeholder="Segundo apellido" maxlength="30">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="tercer_apellido" class="form-label">Tercer Apellido</label>
+                                    <input type="text" class="form-control" id="tercer_apellido" name="tercer_apellido" 
+                                           placeholder="Apellido de casada" maxlength="30">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="primer_nombre" class="form-label">Primer Nombre *</label>
+                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" 
+                                           placeholder="Primer nombre" maxlength="30" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
+                                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" 
+                                           placeholder="Segundo nombre" maxlength="30">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="tercer_nombre" class="form-label">Tercer Nombre</label>
+                                    <input type="text" class="form-control" id="tercer_nombre" name="tercer_nombre" 
+                                           placeholder="Tercer nombre" maxlength="30">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="nextTab('datos-resolucion')">
+                                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Pestaña 2: Datos de Resolución -->
+                        <div class="tab-pane fade" id="datos-resolucion">
+                            <h5 class="mb-4">Datos de la Resolución</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nro_resolucion" class="form-label">Número de Resolución *</label>
+                                    <input type="text" class="form-control" id="nro_resolucion" name="nro_resolucion" 
+                                           placeholder="Ej: RES-2025-001" maxlength="20" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha_resolucion" class="form-label">Fecha de Resolución *</label>
+                                    <input type="date" class="form-control" id="fecha_resolucion" name="fecha_resolucion" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha_posesion" class="form-label">Fecha de Posesión *</label>
+                                    <input type="date" class="form-control" id="fecha_posesion" name="fecha_posesion" required>
+                                    <small class="text-muted">No mayor a la fecha actual</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nro_memorandum_designacion" class="form-label">N° Memorándum Designación</label>
+                                    <input type="text" class="form-control" id="nro_memorandum_designacion" name="nro_memorandum_designacion" 
+                                           placeholder="Opcional" maxlength="20">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha_memorandum" class="form-label">Fecha Memorándum</label>
+                                    <input type="date" class="form-control" id="fecha_memorandum" name="fecha_memorandum">
+                                    <small class="text-muted">No mayor a la fecha actual ni menor a fecha resolución</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="prevTab('datos-personales')">
+                                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="nextTab('asignar-item')">
+                                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Pestaña 3: Asignar Ítem -->
+                        <div class="tab-pane fade" id="asignar-item">
+                            <h5 class="mb-4">Asignación del Ítem</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nro_item" class="form-label">Número del Ítem *</label>
+                                    <input type="text" class="form-control" id="nro_item" name="nro_item" 
+                                           placeholder="Ej: 278" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="administracion" class="form-label">Administración</label>
+                                    <select class="form-select" id="administracion" name="administracion">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="SISTEMA CENTRAL">Sistema Central</option>
+                                        <option value="RRHH">Recursos Humanos</option>
+                                        <option value="FINANZAS">Finanzas</option>
+                                        <option value="SISTEMAS">Sistemas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="jerarquia" class="form-label">Jerarquía</label>
+                                    <select class="form-select" id="jerarquia" name="jerarquia">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="ALTA DIRECCIÓN">Alta Dirección</option>
+                                        <option value="EJECUTIVO">Ejecutivo</option>
+                                        <option value="OPERATIVO">Operativo</option>
+                                        <option value="ASESORÍA">Asesoría</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="depende_de" class="form-label">Depende de</label>
+                                    <input type="text" class="form-control" id="depende_de" name="depende_de" 
+                                           placeholder="Jefe inmediato o departamento">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="unidad_organizacional" class="form-label">Unidad Organizacional</label>
+                                    <select class="form-select" id="unidad_organizacional" name="unidad_organizacional">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="DIRECCIÓN GENERAL">Dirección General</option>
+                                        <option value="GERENCIA">Gerencia</option>
+                                        <option value="DEPARTAMENTO">Departamento</option>
+                                        <option value="ÁREA">Área</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cargo" class="form-label">Cargo</label>
+                                    <input type="text" class="form-control" id="cargo" name="cargo" 
+                                           placeholder="Ej: Analista de Sistemas">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="puesto" class="form-label">Puesto</label>
+                                    <input type="text" class="form-control" id="puesto" name="puesto" 
+                                           placeholder="Ej: P-045">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="direccion_oficina" class="form-label">Dirección Oficina</label>
+                                    <input type="text" class="form-control" id="direccion_oficina" name="direccion_oficina" 
+                                           placeholder="Edificio, oficina, etc.">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="piso_interno" class="form-label">Piso / Número Interno</label>
+                                    <input type="text" class="form-control" id="piso_interno" name="piso_interno" 
+                                           placeholder="Ej: 3er piso, Oficina 301">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="prevTab('datos-resolucion')">
+                                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="nextTab('archivos')">
+                                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Pestaña 4: Archivos -->
+                        <div class="tab-pane fade" id="archivos">
+                            <h5 class="mb-4">Cargar Archivos y Generar Credenciales</h5>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-3">
+                                    <label for="firma" class="form-label">Firma (Imagen)</label>
+                                    <input type="file" class="form-control" id="firma" name="firma" accept="image/*">
+                                    <small class="text-muted">Formato: JPG, PNG</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="foto" class="form-label">Foto (Imagen)</label>
+                                    <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                                    <small class="text-muted">Formato: JPG, PNG</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="huella" class="form-label">Huella (Imagen)</label>
+                                    <input type="file" class="form-control" id="huella" name="huella" accept="image/*">
+                                    <small class="text-muted">Formato: JPG, PNG</small>
+                                </div>
+                            </div>
+                            
+                            <div class="card bg-light mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-key me-2"></i> Datos Generados Automáticamente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Usuario Aplicación</label>
+                                            <input type="text" class="form-control" id="usuario_generado" readonly
+                                                   placeholder="Se generará automáticamente">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Clave Temporal</label>
+                                            <input type="text" class="form-control" id="clave_generada" readonly
+                                                   placeholder="Se generará automáticamente" value="CI del funcionario">
+                                            <small class="text-muted">La contraseña inicial será el número de CI</small>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Correo Institucional</label>
+                                            <input type="text" class="form-control" id="correo_interno" readonly
+                                                   placeholder="Se generará automáticamente">
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info">
+                                        <small>
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Estos datos se generarán automáticamente al guardar. 
+                                            El usuario se crea concatenando primer nombre y primer apellido.
+                                            El correo será: usuario@gobierno.talento.bo
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="prevTab('asignar-item')">
+                                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Registrar Funcionario
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Navegación entre pestañas
+function nextTab(nextTabId) {
+    // Validar pestaña actual antes de avanzar
+    const currentTab = document.querySelector('#formTabs .nav-link.active').getAttribute('href').substring(1);
+    
+    if (currentTab === 'datos-personales') {
+        if (!validarDatosPersonales()) return;
+    } else if (currentTab === 'datos-resolucion') {
+        if (!validarDatosResolucion()) return;
+    } else if (currentTab === 'asignar-item') {
+        if (!validarAsignarItem()) return;
+    }
+    
+    // Cambiar a siguiente pestaña
+    const nextTabElement = new bootstrap.Tab(document.querySelector(`a[href="#${nextTabId}"]`));
+    nextTabElement.show();
+}
+
+function prevTab(prevTabId) {
+    const prevTabElement = new bootstrap.Tab(document.querySelector(`a[href="#${prevTabId}"]`));
+    prevTabElement.show();
+}
+
+// Validaciones
+function validarDatosPersonales() {
+    const ci = document.getElementById('ci').value.trim();
+    const primerApellido = document.getElementById('primer_apellido').value.trim();
+    const primerNombre = document.getElementById('primer_nombre').value.trim();
+    
+    if (!ci || !primerApellido || !primerNombre) {
+        alert('Por favor complete los campos obligatorios de Datos Personales');
+        return false;
+    }
+    return true;
+}
+
+function validarDatosResolucion() {
+    const nroResolucion = document.getElementById('nro_resolucion').value.trim();
+    const fechaResolucion = document.getElementById('fecha_resolucion').value;
+    const fechaPosesion = document.getElementById('fecha_posesion').value;
+    
+    if (!nroResolucion || !fechaResolucion || !fechaPosesion) {
+        alert('Por favor complete los campos obligatorios de Datos de Resolución');
+        return false;
+    }
+    
+    // Validar que fecha posesión no sea mayor a hoy
+    const hoy = new Date().toISOString().split('T')[0];
+    if (fechaPosesion > hoy) {
+        alert('La fecha de posesión no puede ser mayor a la fecha actual');
+        return false;
+    }
+    
+    return true;
+}
+
+function validarAsignarItem() {
+    const nroItem = document.getElementById('nro_item').value.trim();
+    
+    if (!nroItem) {
+        alert('El número de ítem es obligatorio');
+        return false;
+    }
+    return true;
+}
+
+// Generar vista previa de usuario y correo
+document.getElementById('primer_nombre').addEventListener('blur', generarUsuarioPreview);
+document.getElementById('primer_apellido').addEventListener('blur', generarUsuarioPreview);
+
+function generarUsuarioPreview() {
+    const primerNombre = document.getElementById('primer_nombre').value.trim().toLowerCase();
+    const primerApellido = document.getElementById('primer_apellido').value.trim().toLowerCase();
+    
+    if (primerNombre && primerApellido) {
+        const usuario = `${primerNombre}.${primerApellido}`;
+        document.getElementById('usuario_generado').value = usuario;
+        document.getElementById('correo_interno').value = `${usuario}@gobierno.talento.bo`;
+    }
+}
+
+// Setear fecha máxima a hoy en campos de fecha
+document.addEventListener('DOMContentLoaded', function() {
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_resolucion').max = hoy;
+    document.getElementById('fecha_posesion').max = hoy;
+    document.getElementById('fecha_memorandum').max = hoy;
+});
+</script>
+{% endblock %}

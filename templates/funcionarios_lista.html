@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Funcionarios{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i> Funcionarios Registrados
+                </h1>
+                <p class="text-muted">Gestión de funcionarios del sistema</p>
+            </div>
+            <a href="{{ url_for('funcionario_nuevo') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-1"></i> Nuevo Funcionario
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if funcionarios %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>CI</th>
+                                <th>Nombre Completo</th>
+                                <th>Cargo</th>
+                                <th>Unidad</th>
+                                <th>Usuario</th>
+                                <th>Estado</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for funcionario in funcionarios %}
+                            <tr>
+                                <td>{{ funcionario['ci'] }}</td>
+                                <td>
+                                    {{ funcionario['primer_apellido'] }}
+                                    {% if funcionario['segundo_apellido'] %} {{ funcionario['segundo_apellido'] }}{%
+                                    endif %}
+                                    {{ funcionario['primer_nombre'] }}
+                                </td>
+                                <td>{{ funcionario['cargo'] or 'Sin asignar' }}</td>
+                                <td>{{ funcionario['unidad_organizacional'] or 'Sin asignar' }}</td>
+                                <td>
+                                    {% if funcionario['usuario_aplicacion'] %}
+                                    <span class="badge bg-info">{{ funcionario['usuario_aplicacion'] }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">No generado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if funcionario['estado'] == 'pendiente' %}
+                                    <span class="badge bg-warning">Pendiente</span>
+                                    {% elif funcionario['estado'] == 'activo' %}
+                                    <span class="badge bg-success">Activo</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ funcionario['estado'] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ funcionario['fecha_registro'][:10] }}</td>
+                                <!-- En la tabla, actualiza la columna de Acciones: -->
+                                <td>
+                                    <!-- Botón Ver -->
+                                    <a href="{{ url_for('funcionario_ver', ci=funcionario['ci']) }}"
+                                        class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <!-- Botón Editar -->
+                                    <a href="{{ url_for('funcionario_editar', ci=funcionario['ci']) }}"
+                                        class="btn btn-sm btn-outline-success" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <!-- Botón Baja/Activar según estado -->
+                                    {% if funcionario['estado'] == 'baja' %}
+                                    <a href="{{ url_for('funcionario_activar', ci=funcionario['ci']) }}"
+                                        class="btn btn-sm btn-outline-warning" title="Reactivar"
+                                        onclick="return confirm('¿Está seguro de reactivar este funcionario?')">
+                                        <i class="fas fa-user-check"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="{{ url_for('funcionario_baja', ci=funcionario['ci']) }}"
+                                        class="btn btn-sm btn-outline-danger" title="Dar de baja">
+                                        <i class="fas fa-user-minus"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5>No hay funcionarios registrados</h5>
+                    <p class="text-muted">Comience registrando un nuevo funcionario</p>
+                    <a href="{{ url_for('funcionario_nuevo') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-1"></i> Registrar Primer Funcionario
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

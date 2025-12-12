@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Panel - Funcionario{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-tie me-2"></i> Mi Panel
+        </h1>
+        <p class="text-muted">Bienvenido al sistema Talento Humano</p>
+    </div>
+</div>
+
+{% if funcionario and funcionario['estado'] == 'pendiente' %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <h5><i class="fas fa-exclamation-triangle me-2"></i> Acción Requerida</h5>
+            <p class="mb-0">
+                Debe completar su ficha TALENTO dentro de los próximos <strong>5 días hábiles</strong>.
+                <a href="#" class="alert-link">Haga clic aquí para completarla</a>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="bg-primary text-white rounded-circle p-4 d-inline-block mb-3">
+                    <i class="fas fa-id-card fa-3x"></i>
+                </div>
+                <h5>Mi Ficha TALENTO</h5>
+                <p class="text-muted">Complete su información</p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Completar Ficha
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="bg-success text-white rounded-circle p-4 d-inline-block mb-3">
+                    <i class="fas fa-file-upload fa-3x"></i>
+                </div>
+                <h5>Documentos</h5>
+                <p class="text-muted">Suba documentos requeridos</p>
+                <a href="#" class="btn btn-success">
+                    <i class="fas fa-upload me-1"></i> Subir Documentos
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="bg-info text-white rounded-circle p-4 d-inline-block mb-3">
+                    <i class="fas fa-history fa-3x"></i>
+                </div>
+                <h5>Mis Trámites</h5>
+                <p class="text-muted">Revise estado de trámites</p>
+                <a href="#" class="btn btn-info">
+                    <i class="fas fa-search me-1"></i> Ver Trámites
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

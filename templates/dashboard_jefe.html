@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Jefe{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-cog me-2"></i> Dashboard - Jefe de Departamento
+        </h1>
+        <p class="text-muted">Panel de revisión y aprobación</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-check me-2"></i> Formularios Pendientes
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Tiene <strong>3</strong> formularios pendientes de revisión.</p>
+                <a href="#" class="btn btn-warning">
+                    <i class="fas fa-eye me-1"></i> Revisar Pendientes
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i> Documentos por Validar
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Hay <strong>7</strong> documentos esperando validación.</p>
+                <a href="#" class="btn btn-info">
+                    <i class="fas fa-check-circle me-1"></i> Validar Documentos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

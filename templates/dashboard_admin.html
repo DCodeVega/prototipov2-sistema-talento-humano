@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i> Dashboard Administrador
+        </h1>
+        <p class="text-muted">Panel de control del sistema</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Funcionarios</h6>
+                        <h3 class="mb-0">{{ total_funcionarios }}</h3>
+                    </div>
+                    <div class="bg-primary text-white rounded-circle p-3">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Pendientes</h6>
+                        <h3 class="mb-0">{{ pendientes }}</h3>
+                    </div>
+                    <div class="bg-warning text-white rounded-circle p-3">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Activos</h6>
+                        <h3 class="mb-0">{{ activos }}</h3>
+                    </div>
+                    <div class="bg-success text-white rounded-circle p-3">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Inactivos/Baja</h6>
+                        <h3 class="mb-0">{{ total_funcionarios - activos - pendientes }}</h3>
+                    </div>
+                    <div class="bg-danger text-white rounded-circle p-3">
+                        <i class="fas fa-user-minus fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i> Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('funcionario_nuevo') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i> Nuevo Funcionario
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('funcionarios_lista') }}" class="btn btn-success w-100">
+                            <i class="fas fa-list me-2"></i> Ver Funcionarios
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-warning w-100">
+                            <i class="fas fa-file-alt me-2"></i> Generar Reportes
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-danger w-100">
+                            <i class="fas fa-user-minus me-2"></i> Bajas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

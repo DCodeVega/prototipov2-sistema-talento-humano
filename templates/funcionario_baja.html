@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Baja de Funcionario - {{ funcionario.primer_nombre }} {{ funcionario.primer_apellido }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-minus me-2 text-danger"></i> 
+                    Dar de Baja Funcionario
+                </h1>
+                <p class="text-muted">CI: {{ funcionario['ci'] }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('funcionario_ver', ci=funcionario['ci']) }}" class="btn btn-secondary">
+                    <i class="fas fa-times me-1"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Confirmar Baja
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h6><i class="fas fa-warning me-2"></i> ¡Atención!</h6>
+                    <p class="mb-0">
+                        Está a punto de dar de baja al funcionario:
+                        <strong>{{ funcionario['primer_nombre'] }} {{ funcionario['primer_apellido'] }}</strong>
+                    </p>
+                </div>
+                
+                <div class="mb-4">
+                    <h6>Información del Funcionario:</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Nombre Completo:</th>
+                            <td>{{ funcionario['primer_nombre'] }} {{ funcionario['primer_apellido'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>CI:</th>
+                            <td>{{ funcionario['ci'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Cargo:</th>
+                            <td>{{ funcionario['cargo'] or 'No asignado' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Unidad:</th>
+                            <td>{{ funcionario['unidad_organizacional'] or 'No asignada' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Usuario Sistema:</th>
+                            <td>{{ funcionario['usuario_aplicacion'] or 'No generado' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <form method="POST" action="{{ url_for('funcionario_baja', ci=funcionario['ci']) }}">
+                    <div class="mb-3">
+                        <label for="motivo_baja" class="form-label">Motivo de la Baja *</label>
+                        <select class="form-select" id="motivo_baja" name="motivo_baja" required>
+                            <option value="">Seleccionar motivo...</option>
+                            <option value="RENUNCIA">Renuncia Voluntaria</option>
+                            <option value="DESPIDO">Despido</option>
+                            <option value="JUBILACION">Jubilación</option>
+                            <option value="FIN_CONTRATO">Fin de Contrato</option>
+                            <option value="OTRO">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="nro_memorandum_retiro" class="form-label">N° Memorándum de Retiro</label>
+                        <input type="text" class="form-control" id="nro_memorandum_retiro" name="nro_memorandum_retiro" 
+                               placeholder="Ej: MEM-RET-2025-001">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fecha_retiro" class="form-label">Fecha de Retiro *</label>
+                        <input type="date" class="form-control" id="fecha_retiro" name="fecha_retiro" 
+                               value="{{ hoy }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" 
+                                  rows="3" placeholder="Observaciones adicionales..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('funcionario_ver', ci=funcionario['ci']) }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('¿ESTÁ SEGURO de dar de baja a este funcionario? Esta acción NO se puede deshacer fácilmente.')">
+                            <i class="fas fa-user-minus me-1"></i> Confirmar Baja
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer fecha actual como fecha de retiro por defecto
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_retiro').value = hoy;
+    document.getElementById('fecha_retiro').max = hoy;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio de Sesión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-sign-in-alt me-2"></i> Inicio de Sesión
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="tipo_usuario" class="form-label">Tipo de Usuario</label>
+                        <select class="form-select" id="tipo_usuario" name="tipo_usuario" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="admin">Administrador</option>
+                            <option value="funcionario">Funcionario</option>
+                            <option value="jefe">Jefe de Departamento</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ci" class="form-label">Carnet de Identidad (CI)</label>
+                        <input type="text" class="form-control" id="ci" name="ci" 
+                               placeholder="Ej: 1234567" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nombre de Usuario</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               placeholder="Ingrese su usuario" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="Ingrese su contraseña" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <small class="text-muted d-block">Código del Sistema</small>
+                                        <h3 class="text-primary mb-0" id="codigo-display">{{ codigo }}</h3>
+                                        <small class="text-muted">Copie este código</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="codigo_verificacion" class="form-label">Código de Verificación</label>
+                                <input type="text" class="form-control text-center" id="codigo_verificacion" 
+                                       name="codigo_verificacion" placeholder="XXXX" maxlength="4" required>
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" 
+                                        onclick="generarNuevoCodigo()">
+                                    <i class="fas fa-sync-alt me-1"></i> Nuevo Código
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center text-muted">
+                <small>Credenciales demo: admin / admin123</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function generarNuevoCodigo() {
+    fetch('{{ url_for("generar_codigo") }}')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('codigo-display').textContent = data.codigo;
+        });
+}
+</script>
+{% endblock %}
