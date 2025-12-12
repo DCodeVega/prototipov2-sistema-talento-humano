@@ -300,9 +300,157 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
                   password_hash, 'admin', 1))
             print(f"✅ Usuario admin creado con hash: {password_hash[:20]}...")
         
+        # Tablas de parámetros (catálogos)
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_genero (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_departamentos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_paises (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_estado_civil (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_tipo_sangre (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_gestora (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_parentesco (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS parametros_nacionalidad (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            activo INTEGER DEFAULT 1
+        )
+        ''')
+
+        # Insertar datos básicos en parámetros
+        parametros_basicos = {
+            'genero': [
+                ('M', 'MASCULINO'),
+                ('F', 'FEMENINO')
+            ],
+            'departamentos': [
+                ('LP', 'LA PAZ'),
+                ('CB', 'COCHABAMBA'),
+                ('SC', 'SANTA CRUZ'),
+                ('OR', 'ORURO'),
+                ('PT', 'POTOSÍ'),
+                ('TJ', 'TARIJA'),
+                ('CH', 'CHUQUISACA'),
+                ('BN', 'BENI'),
+                ('PD', 'PANDO')
+            ],
+            'paises': [
+                ('BOL', 'BOLIVIA'),
+                ('ARG', 'ARGENTINA'),
+                ('BRA', 'BRASIL'),
+                ('CHL', 'CHILE'),
+                ('PER', 'PERÚ')
+            ],
+            'estado_civil': [
+                ('S', 'SOLTERO(A)'),
+                ('C', 'CASADO(A)'),
+                ('D', 'DIVORCIADO(A)'),
+                ('V', 'VIUDO(A)'),
+                ('U', 'UNIÓN LIBRE')
+            ],
+            'tipo_sangre': [
+                ('A+', 'A+'),
+                ('A-', 'A-'),
+                ('B+', 'B+'),
+                ('B-', 'B-'),
+                ('AB+', 'AB+'),
+                ('AB-', 'AB-'),
+                ('O+', 'O+'),
+                ('O-', 'O-')
+            ],
+            'gestora': [
+                ('CSS', 'CAJA DE SALUD DE SEGUROS SOCIALES'),
+                ('CPS', 'CAJA PETROLERA DE SALUD'),
+                ('CNS', 'CAJA NACIONAL DE SALUD'),
+                ('CSM', 'CAJA DE SALUD DE LA MUJER'),
+                ('CSR', 'CAJA DE SALUD RURAL')
+            ],
+            'parentesco': [
+                ('PAD', 'PADRE'),
+                ('MAD', 'MADRE'),
+                ('CON', 'CÓNYUGUE'),
+                ('HIJ', 'HIJO(A)'),
+                ('HER', 'HERMANO(A)'),
+                ('OTR', 'OTRO')
+            ],
+            'nacionalidad': [
+                ('BOL', 'BOLIVIANA'),
+                ('ARG', 'ARGENTINA'),
+                ('BRA', 'BRASILEÑA'),
+                ('CHL', 'CHILENA'),
+                ('PER', 'PERUANA'),
+                ('OTR', 'OTRA')
+            ]
+        }
+
+        for tabla, datos in parametros_basicos.items():
+            cursor.execute(f"SELECT COUNT(*) FROM parametros_{tabla}")
+            if cursor.fetchone()[0] == 0:
+                for codigo, nombre in datos:
+                    cursor.execute(f"INSERT INTO parametros_{tabla} (codigo, nombre) VALUES (?, ?)", (codigo, nombre))
+                print(f"✅ Datos insertados en: parametros_{tabla}")
+
         conn.commit()
         conn.close()
-        print("✅ Base de datos inicializada correctamente")
+        print("✅ Tablas de parámetros creadas e inicializadas")
+    
+        
           
     # Métodos CRUD para usuarios
     def get_usuario_by_username(self, username):
