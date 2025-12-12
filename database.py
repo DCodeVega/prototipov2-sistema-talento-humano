@@ -450,7 +450,101 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
         conn.close()
         print("✅ Tablas de parámetros creadas e inicializadas")
     
+    def get_parametros(self, tipo):
+        """Obtener lista de parámetros por tipo"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
         
+        tablas_validas = ['genero', 'departamentos', 'paises', 'estado_civil', 
+                        'tipo_sangre', 'gestora', 'parentesco', 'nacionalidad']
+        
+        if tipo not in tablas_validas:
+            conn.close()
+            return []
+        
+        cursor.execute(f"SELECT codigo, nombre FROM parametros_{tipo} WHERE activo = 1 ORDER BY nombre")
+        resultados = cursor.fetchall()
+        conn.close()
+        
+        return [dict(row) for row in resultados]
+
+    def get_datos_adicionales(self, funcionario_id):
+        """Obtener datos adicionales del funcionario"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM datos_adicionales WHERE funcionario_id = ?", (funcionario_id,))
+        datos = cursor.fetchone()
+        conn.close()
+        return datos
+
+    def get_parientes(self, funcionario_id):
+        """Obtener parientes del funcionario"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM parientes WHERE funcionario_id = ? ORDER BY parentesco", (funcionario_id,))
+        parientes = cursor.fetchall()
+        conn.close()
+        return [dict(p) for p in parientes]
+
+    def guardar_datos_adicionales(self, funcionario_id, datos):
+        """Guardar o actualizar datos adicionales"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si ya existen datos
+        cursor.execute("SELECT id FROM datos_adicionales WHERE funcionario_id = ?", (funcionario_id,))
+        existe = cursor.fetchone()
+        
+        if existe:
+            # Actualizar
+            campos = []
+            valores = []
+            for campo, valor in datos.items():
+                if valor is not None:
+                    campos.append(f"{campo} = ?")
+                    valores.append(valor)
+            
+            valores.append(funcionario_id)
+            query = f"UPDATE datos_adicionales SET {', '.join(campos)} WHERE funcionario_id = ?"
+            cursor.execute(query, valores)
+        else:
+            # Insertar
+            campos = ['funcionario_id'] + list(datos.keys())
+            placeholders = ['?'] * len(campos)
+            valores = [funcionario_id] + list(datos.values())
+            
+            query = f"INSERT INTO datos_adicionales ({', '.join(campos)}) VALUES ({', '.join(placeholders)})"
+            cursor.execute(query, valores)
+        
+        conn.commit()
+        conn.close()
+        return True
+
+    def guardar_pariente(self, funcionario_id, datos_pariente):
+        """Guardar un pariente"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        campos = ['funcionario_id'] + list(datos_pariente.keys())
+        placeholders = ['?'] * len(campos)
+        valores = [funcionario_id] + list(datos_pariente.values())
+        
+        query = f"INSERT INTO parientes ({', '.join(campos)}) VALUES ({', '.join(placeholders)})"
+        cursor.execute(query, valores)
+        
+        pariente_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return pariente_id
+
+    def eliminar_pariente(self, pariente_id):
+        """Eliminar un pariente"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM parientes WHERE id = ?", (pariente_id,))
+        conn.commit()
+        conn.close()
+        return True    
           
     # Métodos CRUD para usuarios
     def get_usuario_by_username(self, username):
@@ -619,3 +713,5 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
         cursor.execute("UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id = ?", (user_id,))
         conn.commit()
         conn.close()
+        
+    
