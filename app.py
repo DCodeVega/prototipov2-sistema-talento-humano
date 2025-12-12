@@ -419,12 +419,151 @@ def funcionario_datos_personales():
     """Funcionario completa sus datos personales (Actividad 5)"""
     funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
     
-    if request.method == 'POST':
-        # Aquí procesaríamos los datos del formulario
-        flash('Datos personales guardados correctamente', 'success')
-        return redirect(url_for('funcionario_completar_ficha'))
+    if not funcionario:
+        flash('Funcionario no encontrado', 'danger')
+        return redirect(url_for('dashboard_funcionario'))
     
-    return render_template('funcionario/datos_personales.html', funcionario=funcionario)
+    # Obtener parámetros para los dropdowns
+    parametros = {
+        'genero': db.get_parametros('genero'),
+        'departamentos': db.get_parametros('departamentos'),
+        'paises': db.get_parametros('paises'),
+        'estado_civil': db.get_parametros('estado_civil'),
+        'tipo_sangre': db.get_parametros('tipo_sangre'),
+        'gestora': db.get_parametros('gestora'),
+        'parentesco': db.get_parametros('parentesco'),
+        'nacionalidad': db.get_parametros('nacionalidad')
+    }
+    
+    # Obtener datos adicionales existentes
+    datos_adicionales = db.get_datos_adicionales(funcionario['id'])
+    
+    # Obtener parientes existentes
+    parientes = db.get_parientes(funcionario['id'])
+    
+    # Enriquecer parientes con nombres de parámetros
+    for pariente in parientes:
+        # Buscar nombre del parentesco
+        for parent in parametros['parentesco']:
+            if parent['codigo'] == pariente['parentesco']:
+                pariente['parentesco_nombre'] = parent['nombre']
+                break
+        
+        # Buscar nombre de nacionalidad
+        for nac in parametros['nacionalidad']:
+            if nac['codigo'] == pariente['nacionalidad']:
+                pariente['nacionalidad_nombre'] = nac['nombre']
+                break
+    
+    if request.method == 'POST':
+        try:
+            # 1. Guardar datos adicionales
+            datos = {
+                'genero': request.form.get('genero'),
+                'expedido_en': request.form.get('expedido_en'),
+                'fecha_nacimiento': request.form.get('fecha_nacimiento'),
+                'pais_nacimiento': request.form.get('pais_nacimiento'),
+                'depto_nacimiento': request.form.get('depto_nacimiento'),
+                'provincia_nacimiento': request.form.get('provincia_nacimiento'),
+                'lugar_nacimiento': request.form.get('lugar_nacimiento'),
+                'nro_libreta_militar': request.form.get('nro_libreta_militar'),
+                'gestora': request.form.get('gestora'),
+                'nro_nua': request.form.get('nro_nua'),
+                'tipo_sangre': request.form.get('tipo_sangre'),
+                'fecha_caducidad_ci': request.form.get('fecha_caducidad_ci'),
+                'estado_civil': request.form.get('estado_civil'),
+                'nro_hijos': request.form.get('nro_hijos'),
+                'nro_dependientes': request.form.get('nro_dependientes'),
+                'direccion_domicilio': request.form.get('direccion_domicilio'),
+                'nro_domicilio': request.form.get('nro_domicilio'),
+                'zona_domicilio': request.form.get('zona_domicilio'),
+                'ciudad_localidad': request.form.get('ciudad_localidad'),
+                'tipo_vivienda': request.form.get('tipo_vivienda'),
+                'nombre_tipo_vivienda': request.form.get('nombre_tipo_vivienda'),
+                'piso': request.form.get('piso'),
+                'depto': request.form.get('depto'),
+                'casilla': request.form.get('casilla'),
+                'correo_electronico1': request.form.get('correo_electronico1'),
+                'correo_electronico2': request.form.get('correo_electronico2'),
+                'telefono_fijo1': request.form.get('telefono_fijo1'),
+                'telefono_fijo2': request.form.get('telefono_fijo2'),
+                'telefono_celular1': request.form.get('telefono_celular1'),
+                'telefono_celular2': request.form.get('telefono_celular2'),
+                'nro_carrera_administrativa': request.form.get('nro_carrera_administrativa'),
+                'licencia_conducir': request.form.get('licencia_conducir'),
+                'categoria_licencia': request.form.get('categoria_licencia'),
+                'emergencia_contacto': request.form.get('emergencia_contacto'),
+                'nro_declaracion_jurada': request.form.get('nro_declaracion_jurada'),
+                'fecha_declaracion_jurada': request.form.get('fecha_declaracion_jurada')
+            }
+            
+            # Validaciones especiales
+            if datos['genero'] == 'M' and not datos['nro_libreta_militar']:
+                flash('El número de libreta de servicio militar es obligatorio para varones', 'danger')
+                return render_template('funcionario/datos_personales.html',
+                                     funcionario=funcionario,
+                                     parametros=parametros,
+                                     datos_adicionales=datos_adicionales,
+                                     parientes=parientes,
+                                     hoy=datetime.now().strftime('%Y-%m-%d'),
+                                     fecha_max_nacimiento=(datetime.now() - timedelta(days=365*18)).strftime('%Y-%m-%d'))
+            
+            # Guardar datos adicionales
+            db.guardar_datos_adicionales(funcionario['id'], datos)
+            
+            # 2. Procesar parientes nuevos
+            parientes_nuevos = []
+            i = 0
+            while f'parientes_nuevos[{i}][parentesco]' in request.form:
+                pariente = {
+                    'parentesco': request.form.get(f'parientes_nuevos[{i}][parentesco]'),
+                    'primer_apellido': request.form.get(f'parientes_nuevos[{i}][primer_apellido]'),
+                    'segundo_apellido': request.form.get(f'parientes_nuevos[{i}][segundo_apellido]'),
+                    'nombres': request.form.get(f'parientes_nuevos[{i}][nombres]'),
+                    'nacionalidad': request.form.get(f'parientes_nuevos[{i}][nacionalidad]'),
+                    'telefono': request.form.get(f'parientes_nuevos[{i}][telefono]'),
+                    'genero': request.form.get(f'parientes_nuevos[{i}][genero]'),
+                    'fecha_nacimiento': request.form.get(f'parientes_nuevos[{i}][fecha_nacimiento]'),
+                    'tipo_identificacion': request.form.get(f'parientes_nuevos[{i}][tipo_identificacion]'),
+                    'numero_identificacion': request.form.get(f'parientes_nuevos[{i}][numero_identificacion]')
+                }
+                parientes_nuevos.append(pariente)
+                i += 1
+            
+            # Guardar parientes nuevos
+            for pariente in parientes_nuevos:
+                db.guardar_pariente(funcionario['id'], pariente)
+            
+            # 3. Procesar parientes a eliminar
+            parientes_eliminar = request.form.getlist('parientes_eliminar[]')
+            for pariente_id in parientes_eliminar:
+                db.eliminar_pariente(pariente_id)
+            
+            flash('✅ Datos personales guardados correctamente', 'success')
+            
+            # Actualizar estado del funcionario si es la primera vez
+            conn = db.get_connection()
+            cursor = conn.cursor()
+            cursor.execute("UPDATE funcionarios SET estado = 'en_proceso' WHERE id = ?", (funcionario['id'],))
+            conn.commit()
+            conn.close()
+            
+            return redirect(url_for('funcionario_completar_ficha'))
+            
+        except Exception as e:
+            flash(f'❌ Error al guardar datos: {str(e)}', 'danger')
+    
+    # Para GET, calcular fechas límite
+    hoy = datetime.now().strftime('%Y-%m-%d')
+    fecha_max_nacimiento = (datetime.now() - timedelta(days=365*18)).strftime('%Y-%m-%d')
+    
+    return render_template('funcionario/datos_personales.html',
+                         funcionario=funcionario,
+                         parametros=parametros,
+                         datos_adicionales=datos_adicionales,
+                         parientes=parientes,
+                         hoy=hoy,
+                         fecha_max_nacimiento=fecha_max_nacimiento)
 
 @app.route('/funcionario/formacion-academica', methods=['GET', 'POST'])
 @auth.login_required
