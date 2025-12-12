@@ -1,0 +1,923 @@
+{% extends "base.html" %}
+
+{% block title %}Datos Personales - Completar Ficha TALENTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .form-section h5 {
+        color: #0d6efd;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .campo-obligatorio::after {
+        content: " *";
+        color: #dc3545;
+    }
+    
+    .pariente-item {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+    }
+    
+    .pariente-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user me-2"></i> Datos Personales
+                </h1>
+                <p class="text-muted">
+                    Sección 1: Complete sus datos personales, adicionales y de parientes
+                    {% if funcionario %}
+                    <span class="badge bg-primary ms-2">CI: {{ funcionario['ci'] }}</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <a href="{{ url_for('funcionario_completar_ficha') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Indicador de progreso -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="bg-primary text-white rounded-circle p-3">
+                            <i class="fas fa-user fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Datos Personales (Actividad 5)</h5>
+                        <p class="text-muted mb-0">
+                            Complete todos los campos obligatorios marcados con (*). 
+                            Esta información es esencial para su registro en el sistema.
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-primary fs-6">Paso 1/4</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('funcionario_datos_personales') }}" id="formDatosPersonales">
+    <!-- SECCIÓN A: Datos Personales (no editables - vienen del admin) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-section">
+                <h5><i class="fas fa-id-card me-2"></i> A. Datos Personales (Información Administrativa)</h5>
+                <p class="text-muted mb-3"><em>Estos datos fueron registrados por el administrador y no son editables.</em></p>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Primer Apellido</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['primer_apellido'] }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Segundo Apellido</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['segundo_apellido'] or '' }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Tercer Apellido</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['tercer_apellido'] or '' }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Primer Nombre</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['primer_nombre'] }}" readonly>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Segundo Nombre</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['segundo_nombre'] or '' }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Tercer Nombre</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['tercer_nombre'] or '' }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Tipo Identificación</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['tipo_identificacion'] }}" readonly>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Número Identificación</label>
+                        <input type="text" class="form-control bg-light" value="{{ funcionario['ci'] }}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN B: Datos Personales a Completar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-section">
+                <h5><i class="fas fa-user-edit me-2"></i> B. Datos Personales a Completar</h5>
+                <p class="text-muted mb-3">Complete los siguientes campos según su tipo de identificación.</p>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="genero" class="form-label campo-obligatorio">Género</label>
+                        <select class="form-select" id="genero" name="genero" required>
+                            <option value="">Seleccionar...</option>
+                            {% for genero in parametros.genero %}
+                            <option value="{{ genero.codigo }}" {% if datos_adicionales and datos_adicionales.genero == genero.codigo %}selected{% endif %}>
+                                {{ genero.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="expedido_en" class="form-label campo-obligatorio">Expedido en</label>
+                        <select class="form-select" id="expedido_en" name="expedido_en" required>
+                            <option value="">Seleccionar...</option>
+                            {% for depto in parametros.departamentos %}
+                            <option value="{{ depto.codigo }}" {% if datos_adicionales and datos_adicionales.expedido_en == depto.codigo %}selected{% endif %}>
+                                {{ depto.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="fecha_nacimiento" class="form-label campo-obligatorio">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" 
+                               value="{{ datos_adicionales.fecha_nacimiento if datos_adicionales else '' }}" 
+                               max="{{ fecha_max_nacimiento }}" required>
+                        <small class="text-muted">Debe ser mayor a 18 años</small>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="pais_nacimiento" class="form-label campo-obligatorio">País de Nacimiento</label>
+                        <select class="form-select" id="pais_nacimiento" name="pais_nacimiento" required>
+                            <option value="">Seleccionar...</option>
+                            {% for pais in parametros.paises %}
+                            <option value="{{ pais.codigo }}" {% if datos_adicionales and datos_adicionales.pais_nacimiento == pais.codigo %}selected{% endif %}>
+                                {{ pais.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="depto_nacimiento" class="form-label campo-obligatorio">Departamento de Nacimiento</label>
+                        <select class="form-select" id="depto_nacimiento" name="depto_nacimiento" 
+                                {% if datos_adicionales and datos_adicionales.pais_nacimiento != 'BOL' %}disabled{% endif %} required>
+                            <option value="">Seleccionar...</option>
+                            {% for depto in parametros.departamentos %}
+                            <option value="{{ depto.codigo }}" {% if datos_adicionales and datos_adicionales.depto_nacimiento == depto.codigo %}selected{% endif %}>
+                                {{ depto.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="provincia_nacimiento" class="form-label">Provincia de Nacimiento</label>
+                        <input type="text" class="form-control" id="provincia_nacimiento" name="provincia_nacimiento" 
+                               value="{{ datos_adicionales.provincia_nacimiento if datos_adicionales else '' }}"
+                               {% if datos_adicionales and datos_adicionales.pais_nacimiento != 'BOL' %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento</label>
+                        <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" 
+                               value="{{ datos_adicionales.lugar_nacimiento if datos_adicionales else '' }}" 
+                               maxlength="100">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_libreta_militar" class="form-label">N° Libreta Servicio Militar</label>
+                        <input type="text" class="form-control" id="nro_libreta_militar" name="nro_libreta_militar" 
+                               value="{{ datos_adicionales.nro_libreta_militar if datos_adicionales else '' }}" 
+                               maxlength="15">
+                        <small class="text-muted">Obligatorio para varones</small>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="gestora" class="form-label">Gestora (AFP)</label>
+                        <select class="form-select" id="gestora" name="gestora">
+                            <option value="">Seleccionar...</option>
+                            {% for gestora in parametros.gestora %}
+                            <option value="{{ gestora.codigo }}" {% if datos_adicionales and datos_adicionales.gestora == gestora.codigo %}selected{% endif %}>
+                                {{ gestora.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_nua" class="form-label">N° NUA</label>
+                        <input type="number" class="form-control" id="nro_nua" name="nro_nua" 
+                               value="{{ datos_adicionales.nro_nua if datos_adicionales else '' }}"
+                               {% if not datos_adicionales or not datos_adicionales.gestora %}disabled{% endif %}>
+                        <small class="text-muted">Obligatorio si selecciona Gestora</small>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="tipo_sangre" class="form-label campo-obligatorio">Tipo de Sangre</label>
+                        <select class="form-select" id="tipo_sangre" name="tipo_sangre" required>
+                            <option value="">Seleccionar...</option>
+                            {% for sangre in parametros.tipo_sangre %}
+                            <option value="{{ sangre.codigo }}" {% if datos_adicionales and datos_adicionales.tipo_sangre == sangre.codigo %}selected{% endif %}>
+                                {{ sangre.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN C: Datos Adicionales -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-section">
+                <h5><i class="fas fa-home me-2"></i> C. Datos Adicionales</h5>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="fecha_caducidad_ci" class="form-label campo-obligatorio">Fecha Caducidad CI</label>
+                        <input type="date" class="form-control" id="fecha_caducidad_ci" name="fecha_caducidad_ci" 
+                               value="{{ datos_adicionales.fecha_caducidad_ci if datos_adicionales else '' }}" required>
+                        <small class="text-muted">Debe ser mayor a hoy</small>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="estado_civil" class="form-label campo-obligatorio">Estado Civil</label>
+                        <select class="form-select" id="estado_civil" name="estado_civil" required>
+                            <option value="">Seleccionar...</option>
+                            {% for ec in parametros.estado_civil %}
+                            <option value="{{ ec.codigo }}" {% if datos_adicionales and datos_adicionales.estado_civil == ec.codigo %}selected{% endif %}>
+                                {{ ec.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_hijos" class="form-label">N° de Hijos</label>
+                        <input type="number" class="form-control" id="nro_hijos" name="nro_hijos" 
+                               value="{{ datos_adicionales.nro_hijos if datos_adicionales else 0 }}" min="0" max="99">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_dependientes" class="form-label">N° Dependientes</label>
+                        <input type="number" class="form-control" id="nro_dependientes" name="nro_dependientes" 
+                               value="{{ datos_adicionales.nro_dependientes if datos_adicionales else 0 }}" min="0" max="99">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="direccion_domicilio" class="form-label campo-obligatorio">Dirección Domicilio</label>
+                        <input type="text" class="form-control" id="direccion_domicilio" name="direccion_domicilio" 
+                               value="{{ datos_adicionales.direccion_domicilio if datos_adicionales else '' }}" 
+                               maxlength="300" required>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_domicilio" class="form-label campo-obligatorio">N° Domicilio</label>
+                        <input type="text" class="form-control" id="nro_domicilio" name="nro_domicilio" 
+                               value="{{ datos_adicionales.nro_domicilio if datos_adicionales else '' }}" 
+                               maxlength="10" required>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="zona_domicilio" class="form-label campo-obligatorio">Zona Domicilio</label>
+                        <input type="text" class="form-control" id="zona_domicilio" name="zona_domicilio" 
+                               value="{{ datos_adicionales.zona_domicilio if datos_adicionales else '' }}" 
+                               maxlength="50" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="ciudad_localidad" class="form-label campo-obligatorio">Ciudad / Localidad</label>
+                        <select class="form-select" id="ciudad_localidad" name="ciudad_localidad" required>
+                            <option value="">Seleccionar...</option>
+                            {% for depto in parametros.departamentos %}
+                            <option value="{{ depto.codigo }}" {% if datos_adicionales and datos_adicionales.ciudad_localidad == depto.codigo %}selected{% endif %}>
+                                {{ depto.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="tipo_vivienda" class="form-label">Tipo Vivienda</label>
+                        <select class="form-select" id="tipo_vivienda" name="tipo_vivienda">
+                            <option value="">Seleccionar...</option>
+                            <option value="CASA" {% if datos_adicionales and datos_adicionales.tipo_vivienda == 'CASA' %}selected{% endif %}>Casa</option>
+                            <option value="DEPARTAMENTO" {% if datos_adicionales and datos_adicionales.tipo_vivienda == 'DEPARTAMENTO' %}selected{% endif %}>Departamento</option>
+                            <option value="EDIFICIO" {% if datos_adicionales and datos_adicionales.tipo_vivienda == 'EDIFICIO' %}selected{% endif %}>Edificio</option>
+                            <option value="OTRO" {% if datos_adicionales and datos_adicionales.tipo_vivienda == 'OTRO' %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nombre_tipo_vivienda" class="form-label">Nombre Tipo Vivienda</label>
+                        <input type="text" class="form-control" id="nombre_tipo_vivienda" name="nombre_tipo_vivienda" 
+                               value="{{ datos_adicionales.nombre_tipo_vivienda if datos_adicionales else '' }}" 
+                               maxlength="75" 
+                               {% if not datos_adicionales or datos_adicionales.tipo_vivienda != 'EDIFICIO' %}disabled{% endif %}>
+                        <small class="text-muted">Obligatorio si tipo es EDIFICIO</small>
+                    </div>
+                    
+                    <div class="col-md-1 mb-3">
+                        <label for="piso" class="form-label">Piso</label>
+                        <input type="text" class="form-control" id="piso" name="piso" 
+                               value="{{ datos_adicionales.piso if datos_adicionales else '' }}" 
+                               maxlength="15"
+                               {% if not datos_adicionales or datos_adicionales.tipo_vivienda != 'EDIFICIO' %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="col-md-1 mb-3">
+                        <label for="depto" class="form-label">Depto</label>
+                        <input type="text" class="form-control" id="depto" name="depto" 
+                               value="{{ datos_adicionales.depto if datos_adicionales else '' }}" 
+                               maxlength="10"
+                               {% if not datos_adicionales or datos_adicionales.tipo_vivienda != 'EDIFICIO' %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="col-md-1 mb-3">
+                        <label for="casilla" class="form-label">Casilla</label>
+                        <input type="text" class="form-control" id="casilla" name="casilla" 
+                               value="{{ datos_adicionales.casilla if datos_adicionales else '' }}" 
+                               maxlength="8">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="correo_electronico1" class="form-label campo-obligatorio">Correo Electrónico 1</label>
+                        <input type="email" class="form-control" id="correo_electronico1" name="correo_electronico1" 
+                               value="{{ datos_adicionales.correo_electronico1 if datos_adicionales else '' }}" 
+                               maxlength="50" required>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="correo_electronico2" class="form-label">Correo Electrónico 2</label>
+                        <input type="email" class="form-control" id="correo_electronico2" name="correo_electronico2" 
+                               value="{{ datos_adicionales.correo_electronico2 if datos_adicionales else '' }}" 
+                               maxlength="50">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="telefono_fijo1" class="form-label">Teléfono Fijo 1</label>
+                        <input type="text" class="form-control" id="telefono_fijo1" name="telefono_fijo1" 
+                               value="{{ datos_adicionales.telefono_fijo1 if datos_adicionales else '' }}" 
+                               maxlength="35">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="telefono_fijo2" class="form-label">Teléfono Fijo 2</label>
+                        <input type="text" class="form-control" id="telefono_fijo2" name="telefono_fijo2" 
+                               value="{{ datos_adicionales.telefono_fijo2 if datos_adicionales else '' }}" 
+                               maxlength="35">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="telefono_celular1" class="form-label campo-obligatorio">Teléfono Celular 1</label>
+                        <input type="text" class="form-control" id="telefono_celular1" name="telefono_celular1" 
+                               value="{{ datos_adicionales.telefono_celular1 if datos_adicionales else '' }}" 
+                               maxlength="10" required>
+                        <small class="text-muted">10 dígitos máximo</small>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="telefono_celular2" class="form-label">Teléfono Celular 2</label>
+                        <input type="text" class="form-control" id="telefono_celular2" name="telefono_celular2" 
+                               value="{{ datos_adicionales.telefono_celular2 if datos_adicionales else '' }}" 
+                               maxlength="10">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nro_carrera_administrativa" class="form-label">N° Carrera Administrativa</label>
+                        <input type="text" class="form-control" id="nro_carrera_administrativa" name="nro_carrera_administrativa" 
+                               value="{{ datos_adicionales.nro_carrera_administrativa if datos_adicionales else '' }}" 
+                               maxlength="12">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="licencia_conducir" class="form-label">Licencia Conducir</label>
+                        <select class="form-select" id="licencia_conducir" name="licencia_conducir">
+                            <option value="">Seleccionar...</option>
+                            <option value="SI" {% if datos_adicionales and datos_adicionales.licencia_conducir == 'SI' %}selected{% endif %}>Sí</option>
+                            <option value="NO" {% if datos_adicionales and datos_adicionales.licencia_conducir == 'NO' %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="categoria_licencia" class="form-label">Categoría Licencia</label>
+                        <select class="form-select" id="categoria_licencia" name="categoria_licencia" 
+                                {% if not datos_adicionales or datos_adicionales.licencia_conducir != 'SI' %}disabled{% endif %}>
+                            <option value="">Seleccionar...</option>
+                            <option value="A">A - Motocicletas</option>
+                            <option value="B">B - Vehículos Livianos</option>
+                            <option value="C">C - Vehículos Pesados</option>
+                            <option value="D">D - Transporte Público</option>
+                            <option value="E">E - Maquinaria Pesada</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencia_contacto" class="form-label campo-obligatorio">En caso de emergencia comunicarse con</label>
+                        <input type="text" class="form-control" id="emergencia_contacto" name="emergencia_contacto" 
+                               value="{{ datos_adicionales.emergencia_contacto if datos_adicionales else '' }}" 
+                               maxlength="150" required>
+                        <small class="text-muted">Nombre - Teléfono</small>
+                    </div>
+                </div>
+                
+                <!-- Declaración Jurada de Bienes -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-contract me-2"></i> Declaración Jurada de Bienes</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="nro_declaracion_jurada" class="form-label campo-obligatorio">N° Declaración Jurada</label>
+                                        <input type="text" class="form-control" id="nro_declaracion_jurada" name="nro_declaracion_jurada" 
+                                               value="{{ datos_adicionales.nro_declaracion_jurada if datos_adicionales else '' }}" 
+                                               maxlength="20" required>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <label for="fecha_declaracion_jurada" class="form-label campo-obligatorio">Fecha Declaración Jurada</label>
+                                        <input type="date" class="form-control" id="fecha_declaracion_jurada" name="fecha_declaracion_jurada" 
+                                               value="{{ datos_adicionales.fecha_declaracion_jurada if datos_adicionales else '' }}" 
+                                               max="{{ hoy }}" required>
+                                        <small class="text-muted">Debe ser menor o igual a hoy</small>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <small>
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        La declaración jurada de bienes debe ser presentada antes o al momento de la posesión del cargo.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN D: Parientes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-section">
+                <h5><i class="fas fa-users me-2"></i> D. Parientes</h5>
+                <p class="text-muted mb-3">Agregue sus parientes directos.</p>
+                
+                <!-- Lista de parientes existentes -->
+                <div id="listaParientes">
+                    {% for pariente in parientes %}
+                    <div class="pariente-item" id="pariente-{{ pariente.id }}">
+                        <div class="pariente-header">
+                            <h6 class="mb-0">{{ pariente.parentesco_nombre }} - {{ pariente.nombres }} {{ pariente.primer_apellido }}</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-pariente" 
+                                    data-id="{{ pariente.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <small><strong>Teléfono:</strong> {{ pariente.telefono or 'No registrado' }}</small>
+                            </div>
+                            <div class="col-md-3">
+                                <small><strong>Nacionalidad:</strong> {{ pariente.nacionalidad_nombre }}</small>
+                            </div>
+                            <div class="col-md-3">
+                                <small><strong>Identificación:</strong> {{ pariente.tipo_identificacion }} {{ pariente.numero_identificacion }}</small>
+                            </div>
+                        </div>
+                        <input type="hidden" name="parientes_existentes[]" value="{{ pariente.id }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Formulario para nuevo pariente -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-user-plus me-2"></i> Agregar Nuevo Pariente</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="parentesco" class="form-label campo-obligatorio">Parentesco</label>
+                                <select class="form-select" id="parentesco" name="parentesco">
+                                    <option value="">Seleccionar...</option>
+                                    {% for parent in parametros.parentesco %}
+                                    <option value="{{ parent.codigo }}">{{ parent.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="primer_apellido_pariente" class="form-label campo-obligatorio">Primer Apellido</label>
+                                <input type="text" class="form-control" id="primer_apellido_pariente" name="primer_apellido_pariente" maxlength="30">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="segundo_apellido_pariente" class="form-label">Segundo Apellido</label>
+                                <input type="text" class="form-control" id="segundo_apellido_pariente" name="segundo_apellido_pariente" maxlength="30">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="nombres_pariente" class="form-label campo-obligatorio">Nombres</label>
+                                <input type="text" class="form-control" id="nombres_pariente" name="nombres_pariente" maxlength="30">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="nacionalidad_pariente" class="form-label campo-obligatorio">Nacionalidad</label>
+                                <select class="form-select" id="nacionalidad_pariente" name="nacionalidad_pariente">
+                                    <option value="">Seleccionar...</option>
+                                    {% for nac in parametros.nacionalidad %}
+                                    <option value="{{ nac.codigo }}">{{ nac.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="telefono_pariente" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono_pariente" name="telefono_pariente" maxlength="35">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="genero_pariente" class="form-label campo-obligatorio">Género</label>
+                                <select class="form-select" id="genero_pariente" name="genero_pariente">
+                                    <option value="">Seleccionar...</option>
+                                    {% for genero in parametros.genero %}
+                                    <option value="{{ genero.codigo }}">{{ genero.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="fecha_nacimiento_pariente" class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fecha_nacimiento_pariente" name="fecha_nacimiento_pariente" max="{{ hoy }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="tipo_identificacion_pariente" class="form-label campo-obligatorio">Tipo Identificación</label>
+                                <select class="form-select" id="tipo_identificacion_pariente" name="tipo_identificacion_pariente">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="CI">CI</option>
+                                    <option value="PASAPORTE">Pasaporte</option>
+                                    <option value="OTRO">Otro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="numero_identificacion_pariente" class="form-label campo-obligatorio">Número Identificación</label>
+                                <input type="text" class="form-control" id="numero_identificacion_pariente" name="numero_identificacion_pariente" maxlength="15">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3 align-self-end">
+                                <button type="button" class="btn btn-primary" id="btnAgregarPariente">
+                                    <i class="fas fa-plus me-1"></i> Agregar Pariente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista de parientes a agregar (oculta) -->
+                <div id="parientesNuevos" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('funcionario_completar_ficha') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        
+                        <div>
+                            <button type="button" class="btn btn-outline-primary me-2" id="btnGuardarBorrador">
+                                <i class="fas fa-save me-1"></i> Guardar Borrador
+                            </button>
+                            
+                            <button type="submit" class="btn btn-success" id="btnGuardarContinuar">
+                                <i class="fas fa-save me-1"></i> Guardar y Continuar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Variables globales
+const hoy = '{{ hoy }}';
+
+// Calcular fecha máxima para nacimiento (18 años atrás)
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaMaxNacimiento = new Date();
+    fechaMaxNacimiento.setFullYear(fechaMaxNacimiento.getFullYear() - 18);
+    document.getElementById('fecha_nacimiento').max = fechaMaxNacimiento.toISOString().split('T')[0];
+    
+    // Fecha caducidad CI debe ser mayor a hoy
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_caducidad_ci').min = fechaHoy;
+    
+    // Configurar validaciones condicionales
+    configurarValidaciones();
+    
+    // Configurar eventos para parientes
+    configurarParientes();
+});
+
+function configurarValidaciones() {
+    // País de nacimiento afecta departamento y provincia
+    const paisNacimiento = document.getElementById('pais_nacimiento');
+    const deptoNacimiento = document.getElementById('depto_nacimiento');
+    const provinciaNacimiento = document.getElementById('provincia_nacimiento');
+    
+    paisNacimiento.addEventListener('change', function() {
+        if (this.value === 'BOL') {
+            deptoNacimiento.disabled = false;
+            deptoNacimiento.required = true;
+            provinciaNacimiento.disabled = false;
+        } else {
+            deptoNacimiento.disabled = true;
+            deptoNacimiento.required = false;
+            deptoNacimiento.value = '';
+            provinciaNacimiento.disabled = true;
+            provinciaNacimiento.value = '';
+        }
+    });
+    
+    // Gestora afecta NUA
+    const gestora = document.getElementById('gestora');
+    const nroNua = document.getElementById('nro_nua');
+    
+    gestora.addEventListener('change', function() {
+        nroNua.disabled = !this.value;
+        if (!this.value) nroNua.value = '';
+    });
+    
+    // Tipo vivienda afecta campos relacionados
+    const tipoVivienda = document.getElementById('tipo_vivienda');
+    const nombreTipoVivienda = document.getElementById('nombre_tipo_vivienda');
+    const piso = document.getElementById('piso');
+    const deptoVivienda = document.getElementById('depto');
+    
+    tipoVivienda.addEventListener('change', function() {
+        const esEdificio = this.value === 'EDIFICIO';
+        nombreTipoVivienda.disabled = !esEdificio;
+        piso.disabled = !esEdificio;
+        deptoVivienda.disabled = !esEdificio;
+        
+        if (!esEdificio) {
+            nombreTipoVivienda.value = '';
+            piso.value = '';
+            deptoVivienda.value = '';
+        }
+    });
+    
+    // Licencia conducir afecta categoría
+    const licenciaConducir = document.getElementById('licencia_conducir');
+    const categoriaLicencia = document.getElementById('categoria_licencia');
+    
+    licenciaConducir.addEventListener('change', function() {
+        categoriaLicencia.disabled = this.value !== 'SI';
+        if (this.value !== 'SI') categoriaLicencia.value = '';
+    });
+    
+    // Género afecta libreta militar
+    const genero = document.getElementById('genero');
+    const libretaMilitar = document.getElementById('nro_libreta_militar');
+    
+    genero.addEventListener('change', function() {
+        if (this.value === 'M') {
+            libretaMilitar.setAttribute('data-obligatorio', 'true');
+        } else {
+            libretaMilitar.removeAttribute('data-obligatorio');
+        }
+    });
+}
+
+function configurarParientes() {
+    const btnAgregarPariente = document.getElementById('btnAgregarPariente');
+    const listaParientes = document.getElementById('listaParientes');
+    const parientesNuevos = document.getElementById('parientesNuevos');
+    
+    btnAgregarPariente.addEventListener('click', function() {
+        // Validar campos obligatorios
+        const camposObligatorios = [
+            'parentesco', 'primer_apellido_pariente', 'nombres_pariente',
+            'nacionalidad_pariente', 'genero_pariente', 'tipo_identificacion_pariente',
+            'numero_identificacion_pariente'
+        ];
+        
+        let valido = true;
+        camposObligatorios.forEach(campoId => {
+            const campo = document.getElementById(campoId);
+            if (!campo.value.trim()) {
+                campo.classList.add('is-invalid');
+                valido = false;
+            } else {
+                campo.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!valido) {
+            alert('Por favor complete todos los campos obligatorios del pariente');
+            return;
+        }
+        
+        // Crear objeto con datos del pariente
+        const pariente = {
+            parentesco: document.getElementById('parentesco').value,
+            primer_apellido: document.getElementById('primer_apellido_pariente').value,
+            segundo_apellido: document.getElementById('segundo_apellido_pariente').value,
+            nombres: document.getElementById('nombres_pariente').value,
+            nacionalidad: document.getElementById('nacionalidad_pariente').value,
+            telefono: document.getElementById('telefono_pariente').value,
+            genero: document.getElementById('genero_pariente').value,
+            fecha_nacimiento: document.getElementById('fecha_nacimiento_pariente').value,
+            tipo_identificacion: document.getElementById('tipo_identificacion_pariente').value,
+            numero_identificacion: document.getElementById('numero_identificacion_pariente').value
+        };
+        
+        // Agregar a lista oculta
+        const index = document.querySelectorAll('[name^="parientes_nuevos"]').length;
+        let inputsOcultos = '';
+        
+        for (const [key, value] of Object.entries(pariente)) {
+            inputsOcultos += `<input type="hidden" name="parientes_nuevos[${index}][${key}]" value="${value}">`;
+        }
+        
+        parientesNuevos.insertAdjacentHTML('beforeend', inputsOcultos);
+        
+        // Mostrar en lista visible
+        const parentescoText = document.querySelector(`#parentesco option[value="${pariente.parentesco}"]`).textContent;
+        const nacionalidadText = document.querySelector(`#nacionalidad_pariente option[value="${pariente.nacionalidad}"]`).textContent;
+        const generoText = document.querySelector(`#genero_pariente option[value="${pariente.genero}"]`).textContent;
+        
+        const parienteHTML = `
+            <div class="pariente-item" id="pariente-nuevo-${index}">
+                <div class="pariente-header">
+                    <h6 class="mb-0">${parentescoText} - ${pariente.nombres} ${pariente.primer_apellido}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-pariente-nuevo" 
+                            data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <small><strong>Teléfono:</strong> ${pariente.telefono || 'No registrado'}</small>
+                    </div>
+                    <div class="col-md-3">
+                        <small><strong>Nacionalidad:</strong> ${nacionalidadText}</small>
+                    </div>
+                    <div class="col-md-3">
+                        <small><strong>Género:</strong> ${generoText}</small>
+                    </div>
+                    <div class="col-md-3">
+                        <small><strong>Identificación:</strong> ${pariente.tipo_identificacion} ${pariente.numero_identificacion}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        listaParientes.insertAdjacentHTML('beforeend', parienteHTML);
+        
+        // Limpiar formulario
+        camposObligatorios.forEach(campoId => {
+            document.getElementById(campoId).value = '';
+        });
+        document.getElementById('segundo_apellido_pariente').value = '';
+        document.getElementById('telefono_pariente').value = '';
+        document.getElementById('fecha_nacimiento_pariente').value = '';
+        
+        // Configurar evento eliminar para nuevo pariente
+        document.querySelector(`#pariente-nuevo-${index} .btn-eliminar-pariente-nuevo`)
+            .addEventListener('click', eliminarParienteNuevo);
+    });
+    
+    // Configurar eventos eliminar para parientes existentes
+    document.querySelectorAll('.btn-eliminar-pariente').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const parienteId = this.getAttribute('data-id');
+            if (confirm('¿Está seguro de eliminar este pariente?')) {
+                // Marcar para eliminación
+                const inputEliminar = document.createElement('input');
+                inputEliminar.type = 'hidden';
+                inputEliminar.name = 'parientes_eliminar[]';
+                inputEliminar.value = parienteId;
+                parientesNuevos.appendChild(inputEliminar);
+                
+                // Ocultar en la vista
+                document.getElementById(`pariente-${parienteId}`).style.display = 'none';
+            }
+        });
+    });
+    
+    // Función para eliminar pariente nuevo
+    function eliminarParienteNuevo() {
+        const index = this.getAttribute('data-index');
+        if (confirm('¿Está seguro de eliminar este pariente?')) {
+            // Eliminar inputs ocultos
+            document.querySelectorAll(`[name^="parientes_nuevos[${index}]"]`).forEach(input => {
+                input.remove();
+            });
+            
+            // Eliminar de la vista
+            document.getElementById(`pariente-nuevo-${index}`).remove();
+        }
+    }
+}
+
+// Validación antes de enviar
+document.getElementById('formDatosPersonales').addEventListener('submit', function(e) {
+    // Validar género masculino -> libreta militar obligatoria
+    const genero = document.getElementById('genero').value;
+    const libretaMilitar = document.getElementById('nro_libreta_militar').value;
+    
+    if (genero === 'M' && !libretaMilitar.trim()) {
+        e.preventDefault();
+        alert('El número de libreta de servicio militar es obligatorio para funcionarios varones');
+        document.getElementById('nro_libreta_militar').focus();
+        return;
+    }
+    
+    // Validar si se agregó al menos un pariente
+    const tieneParientes = document.querySelectorAll('.pariente-item').length > 0;
+    if (!tieneParientes) {
+        if (!confirm('No ha agregado ningún pariente. ¿Desea continuar sin agregar parientes?')) {
+            e.preventDefault();
+            return;
+        }
+    }
+    
+    // Mostrar mensaje de confirmación
+    if (!confirm('¿Está seguro de guardar sus datos personales?')) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
