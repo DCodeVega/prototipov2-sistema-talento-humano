@@ -512,14 +512,12 @@ def dashboard_funcionario():
     """Dashboard para funcionarios"""
     funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
     
-    # Calcular progreso (simulado por ahora)
-    progreso = 25
-    secciones = {
-        'datos_personales': False,
-        'formacion': False,
-        'seguro_social': False,
-        'experiencia': False
-    }
+    if not funcionario:
+        flash('Funcionario no encontrado', 'danger')
+        return redirect(url_for('logout'))
+    
+    # Calcular progreso real
+    progreso, secciones = db.calcular_progreso_funcionario(funcionario['id'])
     
     return render_template('dashboard_funcionario.html', 
                          funcionario=funcionario,

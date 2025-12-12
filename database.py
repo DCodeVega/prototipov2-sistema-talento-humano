@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
         conn.commit()
         conn.close()
         print("✅ Base de datos inicializada correctamente")
-    
+          
     # Métodos CRUD para usuarios
     def get_usuario_by_username(self, username):
         """Obtener usuario por nombre de usuario"""
@@ -422,6 +422,47 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
         
         conn.close()
         return conteo
+    
+    # Agrega este método en database.py para calcular progreso
+    def calcular_progreso_funcionario(self, funcionario_id):
+        """Calcular progreso de completado de ficha TALENTO"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Verificar qué tablas tienen datos
+        secciones = {
+            'datos_personales': False,
+            'formacion': False,
+            'seguro_social': False,
+            'experiencia': False
+        }
+        
+        # Verificar datos personales
+        cursor.execute("SELECT COUNT(*) FROM datos_adicionales WHERE funcionario_id = ?", (funcionario_id,))
+        if cursor.fetchone()[0] > 0:
+            secciones['datos_personales'] = True
+        
+        # Verificar formación académica
+        cursor.execute("SELECT COUNT(*) FROM formacion_academica WHERE funcionario_id = ?", (funcionario_id,))
+        if cursor.fetchone()[0] > 0:
+            secciones['formacion'] = True
+        
+        # Verificar seguro social
+        # Nota: Necesitaríamos una tabla específica o campo en funcionarios
+        
+        # Verificar experiencia laboral
+        cursor.execute("SELECT COUNT(*) FROM experiencia_laboral WHERE funcionario_id = ?", (funcionario_id,))
+        if cursor.fetchone()[0] > 0:
+            secciones['experiencia'] = True
+        
+        conn.close()
+        
+        # Calcular porcentaje
+        completadas = sum(1 for sec in secciones.values() if sec)
+        total = len(secciones)
+        progreso = int((completadas / total) * 100) if total > 0 else 0
+        
+        return progreso, secciones
     
     def actualizar_ultimo_acceso(self, user_id):
         """Actualizar último acceso del usuario"""
