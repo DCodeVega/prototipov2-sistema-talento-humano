@@ -573,11 +573,132 @@ def funcionario_formacion_academica():
     """Funcionario completa formación académica (Actividad 6)"""
     funcionario = db.get_funcionario_by_ci(session.get('ci', ''))
     
-    if request.method == 'POST':
-        flash('Formación académica guardada correctamente', 'success')
-        return redirect(url_for('funcionario_completar_ficha'))
+    if not funcionario:
+        flash('Funcionario no encontrado', 'danger')
+        return redirect(url_for('dashboard_funcionario'))
     
-    return render_template('funcionario/formacion_academica.html', funcionario=funcionario)
+    # Obtener parámetros para dropdowns
+    parametros = {
+        'paises': db.get_parametros('paises'),
+        'departamentos': db.get_parametros('departamentos')
+    }
+    
+    # Obtener datos existentes
+    formacion_data = db.get_formacion_academica(funcionario['id'])
+    
+    if request.method == 'POST':
+        try:
+            # 1. Procesar bachillerato
+            bachillerato = {
+                'es_bachiller': request.form.get('es_bachiller'),
+                'ano': request.form.get('ano_bachiller'),
+                'unidad_educativa': request.form.get('unidad_educativa'),
+                'ultimo_curso_vencido': request.form.get('ultimo_curso_vencido')
+            }
+            
+            if bachillerato['es_bachiller']:
+                db.guardar_bachillerato(funcionario['id'], bachillerato)
+            
+            # 2. Procesar estudios superiores nuevos
+            i = 0
+            while f'estudios_nuevos[{i}][pais_estudio]' in request.form:
+                estudio = {
+                    'pais_estudio': request.form.get(f'estudios_nuevos[{i}][pais_estudio]'),
+                    'estado_instruccion': request.form.get(f'estudios_nuevos[{i}][estado_instruccion]'),
+                    'nivel_instruccion': request.form.get(f'estudios_nuevos[{i}][nivel_instruccion]'),
+                    'area': request.form.get(f'estudios_nuevos[{i}][area]'),
+                    'tipo_entidad_academica': request.form.get(f'estudios_nuevos[{i}][tipo_entidad_academica]'),
+                    'institucion_academica': request.form.get(f'estudios_nuevos[{i}][institucion_academica]'),
+                    'nombre_institucion': request.form.get(f'estudios_nuevos[{i}][nombre_institucion]'),
+                    'carrera': request.form.get(f'estudios_nuevos[{i}][carrera]'),
+                    'titulado': request.form.get(f'estudios_nuevos[{i}][titulado]'),
+                    'documento_respaldo': request.form.get(f'estudios_nuevos[{i}][documento_respaldo]'),
+                    'detalle_documento': request.form.get(f'estudios_nuevos[{i}][detalle_documento]'),
+                    'fecha_inicio': request.form.get(f'estudios_nuevos[{i}][fecha_inicio]'),
+                    'fecha_final': request.form.get(f'estudios_nuevos[{i}][fecha_final]'),
+                    'nro_titulo_academico': request.form.get(f'estudios_nuevos[{i}][nro_titulo_academico]'),
+                    'fecha_emision_titulo': request.form.get(f'estudios_nuevos[{i}][fecha_emision_titulo]')
+                }
+                db.guardar_estudio_superior(funcionario['id'], estudio)
+                i += 1
+            
+            # 3. Procesar cursos nuevos
+            j = 0
+            while f'cursos_nuevos[{j}][nombre_curso]' in request.form:
+                curso = {
+                    'nivel_instruccion': request.form.get(f'cursos_nuevos[{j}][nivel_instruccion]'),
+                    'area': request.form.get(f'cursos_nuevos[{j}][area]'),
+                    'nombre_curso': request.form.get(f'cursos_nuevos[{j}][nombre_curso]'),
+                    'tipo_entidad_academica': request.form.get(f'cursos_nuevos[{j}][tipo_entidad_academica]'),
+                    'institucion_academica': request.form.get(f'cursos_nuevos[{j}][institucion_academica]'),
+                    'nro_horas': request.form.get(f'cursos_nuevos[{j}][nro_horas]'),
+                    'fecha_inicio': request.form.get(f'cursos_nuevos[{j}][fecha_inicio]'),
+                    'fecha_final': request.form.get(f'cursos_nuevos[{j}][fecha_final]'),
+                    'documento_respaldo': request.form.get(f'cursos_nuevos[{j}][documento_respaldo]'),
+                    'detalle_documento': request.form.get(f'cursos_nuevos[{j}][detalle_documento]'),
+                    'pais_estudio': request.form.get(f'cursos_nuevos[{j}][pais_estudio]'),
+                    'depto_estudio': request.form.get(f'cursos_nuevos[{j}][depto_estudio]'),
+                    'capacitacion': request.form.get(f'cursos_nuevos[{j}][capacitacion]')
+                }
+                db.guardar_curso(funcionario['id'], curso)
+                j += 1
+            
+            # 4. Procesar idiomas nuevos
+            k = 0
+            while f'idiomas_nuevos[{k}][idioma]' in request.form:
+                idioma = {
+                    'idioma': request.form.get(f'idiomas_nuevos[{k}][idioma]'),
+                    'habla': request.form.get(f'idiomas_nuevos[{k}][habla]'),
+                    'escribe': request.form.get(f'idiomas_nuevos[{k}][escribe]'),
+                    'lee': request.form.get(f'idiomas_nuevos[{k}][lee]')
+                }
+                db.guardar_idioma(funcionario['id'], idioma)
+                k += 1
+            
+            # 5. Procesar elementos a eliminar
+            estudios_eliminar = request.form.getlist('estudios_eliminar[]')
+            for estudio_id in estudios_eliminar:
+                db.eliminar_estudio_superior(estudio_id)
+            
+            cursos_eliminar = request.form.getlist('cursos_eliminar[]')
+            for curso_id in cursos_eliminar:
+                db.eliminar_curso(curso_id)
+            
+            idiomas_eliminar = request.form.getlist('idiomas_eliminar[]')
+            for idioma_id in idiomas_eliminar:
+                db.eliminar_idioma(idioma_id)
+            
+            # 6. Actualizar progreso en la ficha
+            conn = db.get_connection()
+            cursor = conn.cursor()
+            
+            # Verificar si tiene datos en formación académica
+            cursor.execute("SELECT COUNT(*) FROM formacion_academica WHERE funcionario_id = ?", (funcionario['id'],))
+            tiene_formacion = cursor.fetchone()[0] > 0
+            
+            cursor.execute("SELECT COUNT(*) FROM bachillerato WHERE funcionario_id = ?", (funcionario['id'],))
+            tiene_bachillerato = cursor.fetchone()[0] > 0
+            
+            if tiene_formacion or tiene_bachillerato:
+                # Marcar como completada la sección de formación
+                # Esto actualizará el progreso automáticamente
+                pass
+            
+            conn.close()
+            
+            flash('✅ Formación académica guardada correctamente', 'success')
+            return redirect(url_for('funcionario_completar_ficha'))
+            
+        except Exception as e:
+            flash(f'❌ Error al guardar formación académica: {str(e)}', 'danger')
+            import traceback
+            print(traceback.format_exc())
+    
+    # Para GET, cargar datos existentes
+    return render_template('funcionario/formacion_academica.html',
+                         funcionario=funcionario,
+                         parametros=parametros,
+                         **formacion_data)
 
 @app.route('/funcionario/seguro-social', methods=['GET', 'POST'])
 @auth.login_required

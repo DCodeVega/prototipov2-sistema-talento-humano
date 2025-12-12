@@ -679,6 +679,198 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
             'experiencia': False
         }
         
+    def get_formacion_academica(self, funcionario_id):
+        """Obtener formación académica del funcionario"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Obtener bachillerato
+        cursor.execute("SELECT * FROM bachillerato WHERE funcionario_id = ?", (funcionario_id,))
+        bachillerato = cursor.fetchone()
+        
+        # Obtener estudios superiores
+        cursor.execute("SELECT * FROM formacion_academica WHERE funcionario_id = ?", (funcionario_id,))
+        estudios_superiores = cursor.fetchall()
+        
+        # Obtener cursos
+        cursor.execute("SELECT * FROM cursos WHERE funcionario_id = ?", (funcionario_id,))
+        cursos = cursor.fetchall()
+        
+        # Obtener idiomas
+        cursor.execute("SELECT * FROM idiomas WHERE funcionario_id = ?", (funcionario_id,))
+        idiomas = cursor.fetchall()
+        
+        conn.close()
+        
+        return {
+            'bachillerato': dict(bachillerato) if bachillerato else None,
+            'estudios_superiores': [dict(e) for e in estudios_superiores],
+            'cursos': [dict(c) for c in cursos],
+            'idiomas': [dict(i) for i in idiomas]
+        }
+
+    def guardar_bachillerato(self, funcionario_id, datos):
+        """Guardar o actualizar bachillerato"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si ya existe
+        cursor.execute("SELECT id FROM bachillerato WHERE funcionario_id = ?", (funcionario_id,))
+        existe = cursor.fetchone()
+        
+        if existe:
+            # Actualizar
+            cursor.execute('''
+            UPDATE bachillerato SET 
+                es_bachiller = ?,
+                ano = ?,
+                unidad_educativa = ?,
+                ultimo_curso_vencido = ?
+            WHERE funcionario_id = ?
+            ''', (
+                datos.get('es_bachiller'),
+                datos.get('ano'),
+                datos.get('unidad_educativa'),
+                datos.get('ultimo_curso_vencido'),
+                funcionario_id
+            ))
+        else:
+            # Insertar
+            cursor.execute('''
+            INSERT INTO bachillerato (
+                funcionario_id, es_bachiller, ano, unidad_educativa, ultimo_curso_vencido
+            ) VALUES (?, ?, ?, ?, ?)
+            ''', (
+                funcionario_id,
+                datos.get('es_bachiller'),
+                datos.get('ano'),
+                datos.get('unidad_educativa'),
+                datos.get('ultimo_curso_vencido')
+            ))
+        
+        conn.commit()
+        conn.close()
+        return True
+
+    def guardar_estudio_superior(self, funcionario_id, datos):
+        """Guardar un estudio superior"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+        INSERT INTO formacion_academica (
+            funcionario_id, pais_estudio, estado_instruccion, nivel_instruccion,
+            area, tipo_entidad_academica, institucion_academica, nombre_institucion,
+            carrera, titulado, documento_respaldo, detalle_documento,
+            fecha_inicio, fecha_final, nro_titulo_academico, fecha_emision_titulo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            funcionario_id,
+            datos.get('pais_estudio'),
+            datos.get('estado_instruccion'),
+            datos.get('nivel_instruccion'),
+            datos.get('area'),
+            datos.get('tipo_entidad_academica'),
+            datos.get('institucion_academica'),
+            datos.get('nombre_institucion'),
+            datos.get('carrera'),
+            datos.get('titulado'),
+            datos.get('documento_respaldo'),
+            datos.get('detalle_documento'),
+            datos.get('fecha_inicio'),
+            datos.get('fecha_final'),
+            datos.get('nro_titulo_academico'),
+            datos.get('fecha_emision_titulo')
+        ))
+        
+        estudio_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return estudio_id
+
+    def guardar_curso(self, funcionario_id, datos):
+        """Guardar un curso o capacitación"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+        INSERT INTO cursos (
+            funcionario_id, nivel_instruccion, area, nombre_curso,
+            tipo_entidad_academica, institucion_academica, nro_horas,
+            fecha_inicio, fecha_final, documento_respaldo, detalle_documento,
+            pais_estudio, depto_estudio, capacitacion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            funcionario_id,
+            datos.get('nivel_instruccion'),
+            datos.get('area'),
+            datos.get('nombre_curso'),
+            datos.get('tipo_entidad_academica'),
+            datos.get('institucion_academica'),
+            datos.get('nro_horas'),
+            datos.get('fecha_inicio'),
+            datos.get('fecha_final'),
+            datos.get('documento_respaldo'),
+            datos.get('detalle_documento'),
+            datos.get('pais_estudio'),
+            datos.get('depto_estudio'),
+            datos.get('capacitacion')
+        ))
+        
+        curso_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return curso_id
+
+    def guardar_idioma(self, funcionario_id, datos):
+        """Guardar un idioma"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+        INSERT INTO idiomas (
+            funcionario_id, idioma, habla, escribe, lee
+        ) VALUES (?, ?, ?, ?, ?)
+        ''', (
+            funcionario_id,
+            datos.get('idioma'),
+            datos.get('habla'),
+            datos.get('escribe'),
+            datos.get('lee')
+        ))
+        
+        idioma_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return idioma_id
+
+    def eliminar_estudio_superior(self, estudio_id):
+        """Eliminar un estudio superior"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM formacion_academica WHERE id = ?", (estudio_id,))
+        conn.commit()
+        conn.close()
+        return True
+
+    def eliminar_curso(self, curso_id):
+        """Eliminar un curso"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM cursos WHERE id = ?", (curso_id,))
+        conn.commit()
+        conn.close()
+        return True
+
+    def eliminar_idioma(self, idioma_id):
+        """Eliminar un idioma"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM idiomas WHERE id = ?", (idioma_id,))
+        conn.commit()
+        conn.close()
+        return True    
+        
         # Verificar datos personales
         cursor.execute("SELECT COUNT(*) FROM datos_adicionales WHERE funcionario_id = ?", (funcionario_id,))
         if cursor.fetchone()[0] > 0:
