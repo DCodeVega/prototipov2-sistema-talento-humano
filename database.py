@@ -583,102 +583,7 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
             raise Exception(f"Error al crear usuario: {str(e)}")
     
     # Métodos CRUD para funcionarios
-    def crear_funcionario(self, datos):
-        """Crear nuevo funcionario según formulario R-100"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        # Lista completa de campos según el documento
-        campos = [
-            # Datos personales
-            'ci', 'primer_apellido', 'segundo_apellido', 'tercer_apellido',
-            'primer_nombre', 'segundo_nombre', 'tercer_nombre', 'tipo_identificacion',
-            
-            # Datos de resolución
-            'nro_resolucion', 'fecha_resolucion', 'fecha_posesion',
-            'nro_memorandum_designacion', 'fecha_memorandum',
-            
-            # Datos de ítem
-            'nro_item', 'administracion', 'jerarquia', 'depende_de',
-            'unidad_organizacional', 'cargo', 'puesto',
-            'direccion_oficina', 'piso_interno',
-            
-            # Archivos (solo rutas por ahora)
-            'firma_path', 'foto_path', 'huella_path',
-            
-            # Datos generados
-            'usuario_aplicacion', 'clave_generada', 'correo_interno'
-        ]
-        
-        # Asegurar que todos los campos existan en el diccionario datos
-        valores = [datos.get(campo) for campo in campos]
-        
-        cursor.execute(f'''
-        INSERT INTO funcionarios ({', '.join(campos)})
-        VALUES ({', '.join(['?'] * len(campos))})
-        ''', valores)
-        
-        funcionario_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        return funcionario_id
     
-    def get_funcionario_by_ci(self, ci):
-        """Obtener funcionario por CI"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM funcionarios WHERE ci = ?", (ci,))
-        funcionario = cursor.fetchone()
-        conn.close()
-        return funcionario
-    
-    def get_all_funcionarios(self):
-        """Obtener todos los funcionarios"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM funcionarios ORDER BY fecha_registro DESC")
-        funcionarios = cursor.fetchall()
-        conn.close()
-        return funcionarios
-    
-    def contar_funcionarios_por_estado(self):
-        """Contar funcionarios por estado"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute("SELECT estado, COUNT(*) as cantidad FROM funcionarios GROUP BY estado")
-        resultados = cursor.fetchall()
-        
-        # Crear diccionario con todos los estados
-        conteo = {
-            'pendiente': 0,
-            'activo': 0,
-            'inactivo': 0,
-            'baja': 0
-        }
-        
-        for row in resultados:
-            estado = row['estado']
-            if estado in conteo:
-                conteo[estado] = row['cantidad']
-        
-        conn.close()
-        return conteo
-    
-    # Agrega este método en database.py para calcular progreso
-    def calcular_progreso_funcionario(self, funcionario_id):
-        """Calcular progreso de completado de ficha TALENTO"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        # Verificar qué tablas tienen datos
-        secciones = {
-            'datos_personales': False,
-            'formacion': False,
-            'seguro_social': False,
-            'experiencia': False
-        }
-        
     def get_formacion_academica(self, funcionario_id):
         """Obtener formación académica del funcionario"""
         conn = self.get_connection()
@@ -869,20 +774,123 @@ CREATE TABLE IF NOT EXISTS capacitaciones_impartidas (
         cursor.execute("DELETE FROM idiomas WHERE id = ?", (idioma_id,))
         conn.commit()
         conn.close()
-        return True    
+        return True
+    
+    def crear_funcionario(self, datos):
+        """Crear nuevo funcionario según formulario R-100"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Lista completa de campos según el documento
+        campos = [
+            # Datos personales
+            'ci', 'primer_apellido', 'segundo_apellido', 'tercer_apellido',
+            'primer_nombre', 'segundo_nombre', 'tercer_nombre', 'tipo_identificacion',
+            
+            # Datos de resolución
+            'nro_resolucion', 'fecha_resolucion', 'fecha_posesion',
+            'nro_memorandum_designacion', 'fecha_memorandum',
+            
+            # Datos de ítem
+            'nro_item', 'administracion', 'jerarquia', 'depende_de',
+            'unidad_organizacional', 'cargo', 'puesto',
+            'direccion_oficina', 'piso_interno',
+            
+            # Archivos (solo rutas por ahora)
+            'firma_path', 'foto_path', 'huella_path',
+            
+            # Datos generados
+            'usuario_aplicacion', 'clave_generada', 'correo_interno'
+        ]
+        
+        # Asegurar que todos los campos existan en el diccionario datos
+        valores = [datos.get(campo) for campo in campos]
+        
+        cursor.execute(f'''
+        INSERT INTO funcionarios ({', '.join(campos)})
+        VALUES ({', '.join(['?'] * len(campos))})
+        ''', valores)
+        
+        funcionario_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return funcionario_id
+    
+    
+    
+    def get_funcionario_by_ci(self, ci):
+        """Obtener funcionario por CI"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM funcionarios WHERE ci = ?", (ci,))
+        funcionario = cursor.fetchone()
+        conn.close()
+        return funcionario
+    
+    def get_all_funcionarios(self):
+        """Obtener todos los funcionarios"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM funcionarios ORDER BY fecha_registro DESC")
+        funcionarios = cursor.fetchall()
+        conn.close()
+        return funcionarios
+    
+    def contar_funcionarios_por_estado(self):
+        """Contar funcionarios por estado"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT estado, COUNT(*) as cantidad FROM funcionarios GROUP BY estado")
+        resultados = cursor.fetchall()
+        
+        # Crear diccionario con todos los estados
+        conteo = {
+            'pendiente': 0,
+            'activo': 0,
+            'inactivo': 0,
+            'baja': 0
+        }
+        
+        for row in resultados:
+            estado = row['estado']
+            if estado in conteo:
+                conteo[estado] = row['cantidad']
+        
+        conn.close()
+        return conteo
+    
+    # Agrega este método en database.py para calcular progreso
+    def calcular_progreso_funcionario(self, funcionario_id):
+        """Calcular progreso de completado de ficha TALENTO"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Verificar qué tablas tienen datos
+        secciones = {
+            'datos_personales': False,
+            'formacion': False,
+            'seguro_social': False,
+            'experiencia': False
+        }
         
         # Verificar datos personales
         cursor.execute("SELECT COUNT(*) FROM datos_adicionales WHERE funcionario_id = ?", (funcionario_id,))
         if cursor.fetchone()[0] > 0:
             secciones['datos_personales'] = True
         
-        # Verificar formación académica
+        # Verificar formación académica (bachillerato O estudios superiores)
+        cursor.execute("SELECT COUNT(*) FROM bachillerato WHERE funcionario_id = ?", (funcionario_id,))
+        tiene_bachillerato = cursor.fetchone()[0] > 0
+        
         cursor.execute("SELECT COUNT(*) FROM formacion_academica WHERE funcionario_id = ?", (funcionario_id,))
-        if cursor.fetchone()[0] > 0:
+        tiene_formacion = cursor.fetchone()[0] > 0
+        
+        if tiene_bachillerato or tiene_formacion:
             secciones['formacion'] = True
         
-        # Verificar seguro social
-        # Nota: Necesitaríamos una tabla específica o campo en funcionarios
+        # Verificar seguro social (necesitamos crear esta tabla)
+        # Por ahora asumimos que no está implementado
         
         # Verificar experiencia laboral
         cursor.execute("SELECT COUNT(*) FROM experiencia_laboral WHERE funcionario_id = ?", (funcionario_id,))

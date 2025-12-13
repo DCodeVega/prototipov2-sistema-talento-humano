@@ -12,34 +12,36 @@
         margin-bottom: 25px;
         border-left: 4px solid #0d6efd;
     }
-    
+
     .form-section h5 {
         color: #0d6efd;
         margin-bottom: 20px;
         padding-bottom: 10px;
         border-bottom: 2px solid #e9ecef;
     }
-    
+
     .campo-obligatorio::after {
         content: " *";
         color: #dc3545;
     }
-    
-    .estudio-item, .curso-item, .idioma-item {
+
+    .estudio-item,
+    .curso-item,
+    .idioma-item {
         border: 1px solid #dee2e6;
         border-radius: 6px;
         padding: 15px;
         margin-bottom: 15px;
         background: white;
     }
-    
+
     .item-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
     }
-    
+
     /* Pestañas personalizadas */
     .nav-tabs-custom .nav-link {
         border: 1px solid transparent;
@@ -48,7 +50,7 @@
         padding: 0.75rem 1.5rem;
         font-weight: 500;
     }
-    
+
     .nav-tabs-custom .nav-link.active {
         background-color: #e7f1ff;
         border-color: #dee2e6 #dee2e6 #fff;
@@ -108,7 +110,7 @@
 </div>
 
 <form method="POST" action="{{ url_for('funcionario_formacion_academica') }}" id="formFormacion">
-    
+
     <!-- Pestañas -->
     <div class="row mb-4">
         <div class="col-12">
@@ -134,13 +136,14 @@
                     </a>
                 </li>
             </ul>
-            
+
             <div class="tab-content mt-3">
                 <!-- Tab 1: Bachillerato -->
+
                 <div class="tab-pane fade show active" id="bachillerato">
                     <div class="form-section">
                         <h5><i class="fas fa-school me-2"></i> A. Bachillerato</h5>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="es_bachiller" class="form-label campo-obligatorio">¿Es Bachiller?</label>
@@ -151,12 +154,13 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <!-- Si es bachiller -->
                         <div id="datosBachiller" style="display: none;">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="ano_bachiller" class="form-label campo-obligatorio">Año de Bachillerato</label>
+                                    <label for="ano_bachiller" class="form-label campo-obligatorio">Año de
+                                        Bachillerato</label>
                                     <select class="form-select" id="ano_bachiller" name="ano_bachiller">
                                         <option value="">Seleccionar...</option>
                                         {% for ano in range(1970, 2026) %}
@@ -164,20 +168,23 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                
+
                                 <div class="col-md-8 mb-3">
-                                    <label for="unidad_educativa" class="form-label campo-obligatorio">Unidad Educativa</label>
-                                    <input type="text" class="form-control" id="unidad_educativa" name="unidad_educativa" 
-                                           maxlength="100" placeholder="Nombre del colegio o escuela">
+                                    <label for="unidad_educativa" class="form-label campo-obligatorio">Unidad
+                                        Educativa</label>
+                                    <input type="text" class="form-control" id="unidad_educativa"
+                                        name="unidad_educativa" maxlength="100"
+                                        placeholder="Nombre del colegio o escuela">
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Si NO es bachiller -->
                         <div id="ultimoCurso" style="display: none;">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="ultimo_curso_vencido" class="form-label campo-obligatorio">Último Curso Vencido</label>
+                                    <label for="ultimo_curso_vencido" class="form-label campo-obligatorio">Último Curso
+                                        Vencido</label>
                                     <select class="form-select" id="ultimo_curso_vencido" name="ultimo_curso_vencido">
                                         <option value="">Seleccionar...</option>
                                         <option value="6TO_PRIMARIA">6to de Primaria</option>
@@ -192,7 +199,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Tab 2: Estudios Superiores -->
                 <div class="tab-pane fade" id="estudios-superiores">
                     <div class="form-section">
@@ -202,38 +209,45 @@
                                 <i class="fas fa-plus me-1"></i> Agregar Estudio
                             </button>
                         </div>
-                        
+
                         <!-- Lista de estudios existentes -->
+                        <!-- En la pestaña de Estudios Superiores, reemplaza esta sección: -->
+                        <!-- <div id="listaEstudios"> -->
+                        <!-- con esto: -->
+
                         <div id="listaEstudios">
-                            {% if estudios_superiores %}
-                                {% for estudio in estudios_superiores %}
-                                <div class="estudio-item" id="estudio-{{ estudio.id }}">
-                                    <div class="item-header">
-                                        <h6 class="mb-0">{{ estudio.carrera }} - {{ estudio.estado_instruccion }}</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-estudio" 
-                                                data-id="{{ estudio.id }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <small><strong>Institución:</strong> {{ estudio.nombre_institucion }}</small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small><strong>Periodo:</strong> {{ estudio.fecha_inicio }} a {{ estudio.fecha_final }}</small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small><strong>Titulado:</strong> {{ 'Sí' if estudio.titulado == 'SI' else 'No' }}</small>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="estudios_existentes[]" value="{{ estudio.id }}">
+                            {% if estudios_superiores and estudios_superiores|length > 0 %}
+                            {% for estudio in estudios_superiores %}
+                            <div class="estudio-item" id="estudio-{{ estudio.id }}">
+                                <div class="item-header">
+                                    <h6 class="mb-0">{{ estudio.carrera }} - {{ estudio.estado_instruccion }}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-estudio"
+                                        data-id="{{ estudio.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                {% endfor %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small><strong>Institución:</strong> {{ estudio.nombre_institucion or
+                                            estudio.institucion_academica }}</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small><strong>Periodo:</strong> {{ estudio.fecha_inicio }} a {{
+                                            estudio.fecha_final or 'Actual' }}</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small><strong>Titulado:</strong> {{ 'Sí' if estudio.titulado == 'SI' else 'No'
+                                            }}</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="estudios_existentes[]" value="{{ estudio.id }}">
+                            </div>
+                            {% endfor %}
                             {% else %}
-                                <p class="text-muted text-center py-3">No hay estudios superiores registrados aún.</p>
+                            <p class="text-muted text-center py-3">No hay estudios superiores registrados aún.</p>
                             {% endif %}
                         </div>
-                        
+
                         <!-- Formulario para nuevo estudio -->
                         <div class="card mt-3" id="formNuevoEstudio" style="display: none;">
                             <div class="card-header">
@@ -242,7 +256,8 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
-                                        <label for="pais_estudio" class="form-label campo-obligatorio">País de Estudio</label>
+                                        <label for="pais_estudio" class="form-label campo-obligatorio">País de
+                                            Estudio</label>
                                         <select class="form-select" id="pais_estudio" name="pais_estudio">
                                             <option value="">Seleccionar...</option>
                                             {% for pais in parametros.paises %}
@@ -250,9 +265,10 @@
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
-                                        <label for="estado_instruccion" class="form-label campo-obligatorio">Estado</label>
+                                        <label for="estado_instruccion"
+                                            class="form-label campo-obligatorio">Estado</label>
                                         <select class="form-select" id="estado_instruccion" name="estado_instruccion">
                                             <option value="">Seleccionar...</option>
                                             <option value="TITULADO">Titulado</option>
@@ -261,9 +277,10 @@
                                             <option value="ABANDONO">Abandonó</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
-                                        <label for="nivel_instruccion" class="form-label campo-obligatorio">Nivel</label>
+                                        <label for="nivel_instruccion"
+                                            class="form-label campo-obligatorio">Nivel</label>
                                         <select class="form-select" id="nivel_instruccion" name="nivel_instruccion">
                                             <option value="">Seleccionar...</option>
                                             <option value="TECNICO_MEDIO">Técnico Medio</option>
@@ -275,7 +292,7 @@
                                             <option value="ESPECIALIDAD">Especialidad</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="area" class="form-label">Área</label>
                                         <select class="form-select" id="area" name="area">
@@ -290,21 +307,24 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="institucion_academica" class="form-label campo-obligatorio">Institución</label>
-                                        <input type="text" class="form-control" id="institucion_academica" name="institucion_academica" 
-                                               maxlength="100" placeholder="Nombre de la universidad o instituto">
+                                        <label for="institucion_academica"
+                                            class="form-label campo-obligatorio">Institución</label>
+                                        <input type="text" class="form-control" id="institucion_academica"
+                                            name="institucion_academica" maxlength="100"
+                                            placeholder="Nombre de la universidad o instituto">
                                     </div>
-                                    
+
                                     <div class="col-md-6 mb-3">
-                                        <label for="carrera" class="form-label campo-obligatorio">Carrera o Programa</label>
-                                        <input type="text" class="form-control" id="carrera" name="carrera" 
-                                               maxlength="100" placeholder="Nombre de la carrera">
+                                        <label for="carrera" class="form-label campo-obligatorio">Carrera o
+                                            Programa</label>
+                                        <input type="text" class="form-control" id="carrera" name="carrera"
+                                            maxlength="100" placeholder="Nombre de la carrera">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
                                         <label for="titulado" class="form-label campo-obligatorio">¿Titulado?</label>
@@ -314,30 +334,34 @@
                                             <option value="NO">NO</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3" id="campoTitulo" style="display: none;">
                                         <label for="nro_titulo_academico" class="form-label">N° Título</label>
-                                        <input type="text" class="form-control" id="nro_titulo_academico" name="nro_titulo_academico" 
-                                               maxlength="50" placeholder="Número de título">
+                                        <input type="text" class="form-control" id="nro_titulo_academico"
+                                            name="nro_titulo_academico" maxlength="50" placeholder="Número de título">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3" id="campoFechaTitulo" style="display: none;">
                                         <label for="fecha_emision_titulo" class="form-label">Fecha Emisión</label>
-                                        <input type="date" class="form-control" id="fecha_emision_titulo" name="fecha_emision_titulo">
+                                        <input type="date" class="form-control" id="fecha_emision_titulo"
+                                            name="fecha_emision_titulo">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
-                                        <label for="fecha_inicio_estudio" class="form-label campo-obligatorio">Fecha Inicio</label>
-                                        <input type="date" class="form-control" id="fecha_inicio_estudio" name="fecha_inicio_estudio">
+                                        <label for="fecha_inicio_estudio" class="form-label campo-obligatorio">Fecha
+                                            Inicio</label>
+                                        <input type="date" class="form-control" id="fecha_inicio_estudio"
+                                            name="fecha_inicio_estudio">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="fecha_final_estudio" class="form-label">Fecha Final</label>
-                                        <input type="date" class="form-control" id="fecha_final_estudio" name="fecha_final_estudio">
+                                        <input type="date" class="form-control" id="fecha_final_estudio"
+                                            name="fecha_final_estudio">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="documento_respaldo" class="form-label">Documento Respaldo</label>
                                         <select class="form-select" id="documento_respaldo" name="documento_respaldo">
@@ -348,14 +372,14 @@
                                             <option value="ACTA">Acta</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="detalle_documento" class="form-label">Detalle Documento</label>
-                                        <input type="text" class="form-control" id="detalle_documento" name="detalle_documento" 
-                                               maxlength="50" placeholder="Ej: Bs. 300, LPZ">
+                                        <input type="text" class="form-control" id="detalle_documento"
+                                            name="detalle_documento" maxlength="50" placeholder="Ej: Bs. 300, LPZ">
                                     </div>
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary me-2" id="btnCancelarEstudio">
                                         <i class="fas fa-times me-1"></i> Cancelar
@@ -368,7 +392,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Tab 3: Cursos -->
                 <div class="tab-pane fade" id="cursos">
                     <div class="form-section">
@@ -378,38 +402,40 @@
                                 <i class="fas fa-plus me-1"></i> Agregar Curso
                             </button>
                         </div>
-                        
+
                         <!-- Lista de cursos existentes -->
+                        <!-- En la pestaña de Cursos, reemplaza esta sección: -->
                         <div id="listaCursos">
                             {% if cursos %}
-                                {% for curso in cursos %}
-                                <div class="curso-item" id="curso-{{ curso.id }}">
-                                    <div class="item-header">
-                                        <h6 class="mb-0">{{ curso.nombre_curso }}</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-curso" 
-                                                data-id="{{ curso.id }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <small><strong>Institución:</strong> {{ curso.nombre_institucion }}</small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small><strong>Horas:</strong> {{ curso.nro_horas }} hrs</small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small><strong>Fecha:</strong> {{ curso.fecha_inicio }}</small>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="cursos_existentes[]" value="{{ curso.id }}">
+                            {% for curso in cursos %}
+                            <div class="curso-item" id="curso-{{ curso.id }}">
+                                <div class="item-header">
+                                    <h6 class="mb-0">{{ curso.nombre_curso }}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-curso"
+                                        data-id="{{ curso.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                {% endfor %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small><strong>Institución:</strong> {{ curso.nombre_institucion or
+                                            curso.institucion_academica }}</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small><strong>Horas:</strong> {{ curso.nro_horas }} hrs</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small><strong>Fecha:</strong> {{ curso.fecha_inicio }}</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="cursos_existentes[]" value="{{ curso.id }}">
+                            </div>
+                            {% endfor %}
                             {% else %}
-                                <p class="text-muted text-center py-3">No hay cursos registrados aún.</p>
+                            <p class="text-muted text-center py-3">No hay cursos registrados aún.</p>
                             {% endif %}
                         </div>
-                        
+
                         <!-- Formulario para nuevo curso -->
                         <div class="card mt-3" id="formNuevoCurso" style="display: none;">
                             <div class="card-header">
@@ -418,45 +444,53 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
-                                        <label for="nombre_curso" class="form-label campo-obligatorio">Nombre del Curso</label>
-                                        <input type="text" class="form-control" id="nombre_curso" name="nombre_curso" 
-                                               maxlength="100" placeholder="Nombre del curso o capacitación">
+                                        <label for="nombre_curso" class="form-label campo-obligatorio">Nombre del
+                                            Curso</label>
+                                        <input type="text" class="form-control" id="nombre_curso" name="nombre_curso"
+                                            maxlength="100" placeholder="Nombre del curso o capacitación">
                                     </div>
-                                    
+
                                     <div class="col-md-4 mb-3">
-                                        <label for="tipo_entidad_academica" class="form-label">Tipo de Institución</label>
-                                        <select class="form-select" id="tipo_entidad_academica" name="tipo_entidad_academica">
+                                        <label for="tipo_entidad_academica" class="form-label">Tipo de
+                                            Institución</label>
+                                        <select class="form-select" id="tipo_entidad_academica"
+                                            name="tipo_entidad_academica">
                                             <option value="">Seleccionar...</option>
                                             <option value="PUBLICA">Pública</option>
                                             <option value="PRIVADA">Privada</option>
                                             <option value="MIXTA">Mixta</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-4 mb-3">
-                                        <label for="institucion_academica_curso" class="form-label campo-obligatorio">Institución</label>
-                                        <input type="text" class="form-control" id="institucion_academica_curso" name="institucion_academica_curso" 
-                                               maxlength="100" placeholder="Institución que impartió el curso">
+                                        <label for="institucion_academica_curso"
+                                            class="form-label campo-obligatorio">Institución</label>
+                                        <input type="text" class="form-control" id="institucion_academica_curso"
+                                            name="institucion_academica_curso" maxlength="100"
+                                            placeholder="Institución que impartió el curso">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
                                         <label for="nro_horas" class="form-label">N° Horas</label>
-                                        <input type="number" class="form-control" id="nro_horas" name="nro_horas" 
-                                               min="1" placeholder="Ej: 40">
+                                        <input type="number" class="form-control" id="nro_horas" name="nro_horas"
+                                            min="1" placeholder="Ej: 40">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
-                                        <label for="fecha_inicio_curso" class="form-label campo-obligatorio">Fecha Inicio</label>
-                                        <input type="date" class="form-control" id="fecha_inicio_curso" name="fecha_inicio_curso">
+                                        <label for="fecha_inicio_curso" class="form-label campo-obligatorio">Fecha
+                                            Inicio</label>
+                                        <input type="date" class="form-control" id="fecha_inicio_curso"
+                                            name="fecha_inicio_curso">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="fecha_final_curso" class="form-label">Fecha Final</label>
-                                        <input type="date" class="form-control" id="fecha_final_curso" name="fecha_final_curso">
+                                        <input type="date" class="form-control" id="fecha_final_curso"
+                                            name="fecha_final_curso">
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="capacitacion" class="form-label">Tipo de Capacitación</label>
                                         <select class="form-select" id="capacitacion" name="capacitacion">
@@ -467,7 +501,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary me-2" id="btnCancelarCurso">
                                         <i class="fas fa-times me-1"></i> Cancelar
@@ -480,7 +514,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Tab 4: Idiomas -->
                 <div class="tab-pane fade" id="idiomas">
                     <div class="form-section">
@@ -490,38 +524,39 @@
                                 <i class="fas fa-plus me-1"></i> Agregar Idioma
                             </button>
                         </div>
-                        
+
                         <!-- Lista de idiomas existentes -->
+                        <!-- En la pestaña de Idiomas, reemplaza esta sección: -->
                         <div id="listaIdiomas">
-                            {% if idiomas %}
-                                {% for idioma in idiomas %}
-                                <div class="idioma-item" id="idioma-{{ idioma.id }}">
-                                    <div class="item-header">
-                                        <h6 class="mb-0">{{ idioma.idioma }}</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-idioma" 
-                                                data-id="{{ idioma.id }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <small><strong>Habla:</strong> {{ idioma.habla }}</small>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <small><strong>Lee:</strong> {{ idioma.lee }}</small>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <small><strong>Escribe:</strong> {{ idioma.escribe }}</small>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="idiomas_existentes[]" value="{{ idioma.id }}">
+                            {% if idiomas and idiomas|length > 0 %}
+                            {% for idioma in idiomas %}
+                            <div class="idioma-item" id="idioma-{{ idioma.id }}">
+                                <div class="item-header">
+                                    <h6 class="mb-0">{{ idioma.idioma }}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-idioma"
+                                        data-id="{{ idioma.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                {% endfor %}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <small><strong>Habla:</strong> {{ idioma.habla }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <small><strong>Lee:</strong> {{ idioma.lee }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <small><strong>Escribe:</strong> {{ idioma.escribe }}</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="idiomas_existentes[]" value="{{ idioma.id }}">
+                            </div>
+                            {% endfor %}
                             {% else %}
-                                <p class="text-muted text-center py-3">No hay idiomas registrados aún.</p>
+                            <p class="text-muted text-center py-3">No hay idiomas registrados aún.</p>
                             {% endif %}
                         </div>
-                        
+
                         <!-- Formulario para nuevo idioma -->
                         <div class="card mt-3" id="formNuevoIdioma" style="display: none;">
                             <div class="card-header">
@@ -547,7 +582,7 @@
                                             <option value="OTRO">Otro</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="habla" class="form-label campo-obligatorio">Habla</label>
                                         <select class="form-select" id="habla" name="habla">
@@ -559,7 +594,7 @@
                                             <option value="NINGUNO">Ninguno</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="lee" class="form-label campo-obligatorio">Lee</label>
                                         <select class="form-select" id="lee" name="lee">
@@ -571,7 +606,7 @@
                                             <option value="NINGUNO">Ninguno</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-3 mb-3">
                                         <label for="escribe" class="form-label campo-obligatorio">Escribe</label>
                                         <select class="form-select" id="escribe" name="escribe">
@@ -584,7 +619,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary me-2" id="btnCancelarIdioma">
                                         <i class="fas fa-times me-1"></i> Cancelar
@@ -610,12 +645,12 @@
                         <a href="{{ url_for('funcionario_completar_ficha') }}" class="btn btn-secondary">
                             <i class="fas fa-times me-1"></i> Cancelar
                         </a>
-                        
+
                         <div>
                             <button type="button" class="btn btn-outline-primary me-2" id="btnGuardarBorrador">
                                 <i class="fas fa-save me-1"></i> Guardar Borrador
                             </button>
-                            
+
                             <button type="submit" class="btn btn-success" id="btnGuardarContinuar">
                                 <i class="fas fa-save me-1"></i> Guardar y Continuar
                             </button>
@@ -625,7 +660,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Campos ocultos para datos dinámicos -->
     <div id="estudiosNuevos"></div>
     <div id="cursosNuevos"></div>
@@ -638,14 +673,29 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
     const hoy = new Date().toISOString().split('T')[0];
-    const estudianteIndex = 0;
-    const cursoIndex = 0;
-    const idiomaIndex = 0;
     
-    // 1. Configurar Bachillerato
+    // ============================================
+    // 1. CONFIGURAR BACHILLERATO
+    // ============================================
     const esBachiller = document.getElementById('es_bachiller');
     const datosBachiller = document.getElementById('datosBachiller');
     const ultimoCurso = document.getElementById('ultimoCurso');
+    
+    {% if bachillerato %}
+    // Pre-cargar datos de bachillerato si existen
+    esBachiller.value = '{{ bachillerato.es_bachiller }}';
+    
+    // Disparar evento change para mostrar campos correctos
+    esBachiller.dispatchEvent(new Event('change'));
+    
+    // Si hay datos, llenar campos
+    {% if bachillerato.es_bachiller == 'SI' %}
+    document.getElementById('ano_bachiller').value = '{{ bachillerato.ano }}';
+    document.getElementById('unidad_educativa').value = '{{ bachillerato.unidad_educativa }}';
+    {% else %}
+    document.getElementById('ultimo_curso_vencido').value = '{{ bachillerato.ultimo_curso_vencido }}';
+    {% endif %}
+    {% endif %}
     
     esBachiller.addEventListener('change', function() {
         if (this.value === 'SI') {
@@ -669,7 +719,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 2. Configurar Estudios Superiores
+    // ============================================
+    // 2. CONFIGURAR ESTUDIOS SUPERIORES
+    // ============================================
     const btnAgregarEstudio = document.getElementById('btnAgregarEstudio');
     const formNuevoEstudio = document.getElementById('formNuevoEstudio');
     const btnCancelarEstudio = document.getElementById('btnCancelarEstudio');
@@ -677,151 +729,164 @@ document.addEventListener('DOMContentLoaded', function() {
     const estudiosNuevos = document.getElementById('estudiosNuevos');
     const listaEstudios = document.getElementById('listaEstudios');
     
-    btnAgregarEstudio.addEventListener('click', function() {
-        formNuevoEstudio.style.display = 'block';
-        btnAgregarEstudio.style.display = 'none';
-    });
+    if (btnAgregarEstudio) {
+        btnAgregarEstudio.addEventListener('click', function() {
+            formNuevoEstudio.style.display = 'block';
+            btnAgregarEstudio.style.display = 'none';
+        });
+    }
     
-    btnCancelarEstudio.addEventListener('click', function() {
-        formNuevoEstudio.style.display = 'none';
-        btnAgregarEstudio.style.display = 'block';
-        limpiarFormularioEstudio();
-    });
+    if (btnCancelarEstudio) {
+        btnCancelarEstudio.addEventListener('click', function() {
+            formNuevoEstudio.style.display = 'none';
+            if (btnAgregarEstudio) btnAgregarEstudio.style.display = 'block';
+            limpiarFormularioEstudio();
+        });
+    }
     
     // Mostrar/ocultar campos de título
-    document.getElementById('titulado').addEventListener('change', function() {
-        const campoTitulo = document.getElementById('campoTitulo');
-        const campoFechaTitulo = document.getElementById('campoFechaTitulo');
-        
-        if (this.value === 'SI') {
-            campoTitulo.style.display = 'block';
-            campoFechaTitulo.style.display = 'block';
-            document.getElementById('nro_titulo_academico').required = true;
-            document.getElementById('fecha_emision_titulo').required = true;
-        } else {
-            campoTitulo.style.display = 'none';
-            campoFechaTitulo.style.display = 'none';
-            document.getElementById('nro_titulo_academico').required = false;
-            document.getElementById('fecha_emision_titulo').required = false;
-        }
-    });
-    
-    btnGuardarEstudio.addEventListener('click', function() {
-        // Validar campos obligatorios
-        const camposObligatorios = [
-            'pais_estudio', 'estado_instruccion', 'nivel_instruccion',
-            'institucion_academica', 'carrera', 'titulado', 'fecha_inicio_estudio'
-        ];
-        
-        let valido = true;
-        camposObligatorios.forEach(campoId => {
-            const campo = document.getElementById(campoId);
-            if (!campo.value.trim()) {
-                campo.classList.add('is-invalid');
-                valido = false;
+    const tituladoSelect = document.getElementById('titulado');
+    if (tituladoSelect) {
+        tituladoSelect.addEventListener('change', function() {
+            const campoTitulo = document.getElementById('campoTitulo');
+            const campoFechaTitulo = document.getElementById('campoFechaTitulo');
+            
+            if (this.value === 'SI') {
+                if (campoTitulo) campoTitulo.style.display = 'block';
+                if (campoFechaTitulo) campoFechaTitulo.style.display = 'block';
             } else {
-                campo.classList.remove('is-invalid');
+                if (campoTitulo) campoTitulo.style.display = 'none';
+                if (campoFechaTitulo) campoFechaTitulo.style.display = 'none';
             }
         });
-        
-        if (!valido) {
-            alert('Por favor complete todos los campos obligatorios del estudio');
-            return;
-        }
-        
-        // Guardar estudio
-        const estudio = {
-            pais_estudio: document.getElementById('pais_estudio').value,
-            estado_instruccion: document.getElementById('estado_instruccion').value,
-            nivel_instruccion: document.getElementById('nivel_instruccion').value,
-            area: document.getElementById('area').value,
-            institucion_academica: document.getElementById('institucion_academica').value,
-            carrera: document.getElementById('carrera').value,
-            titulado: document.getElementById('titulado').value,
-            nro_titulo_academico: document.getElementById('nro_titulo_academico').value,
-            fecha_emision_titulo: document.getElementById('fecha_emision_titulo').value,
-            documento_respaldo: document.getElementById('documento_respaldo').value,
-            detalle_documento: document.getElementById('detalle_documento').value,
-            fecha_inicio: document.getElementById('fecha_inicio_estudio').value,
-            fecha_final: document.getElementById('fecha_final_estudio').value
-        };
-        
-        // Agregar a lista oculta
-        const index = document.querySelectorAll('[name^="estudios_nuevos"]').length;
-        let inputsOcultos = '';
-        
-        for (const [key, value] of Object.entries(estudio)) {
-            if (value) {
-                inputsOcultos += `<input type="hidden" name="estudios_nuevos[${index}][${key}]" value="${value}">`;
+    }
+    
+    if (btnGuardarEstudio) {
+        btnGuardarEstudio.addEventListener('click', function() {
+            // Validar campos obligatorios
+            const camposObligatorios = [
+                'pais_estudio', 'estado_instruccion', 'nivel_instruccion',
+                'institucion_academica', 'carrera', 'titulado', 'fecha_inicio_estudio'
+            ];
+            
+            let valido = true;
+            camposObligatorios.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo && !campo.value.trim()) {
+                    campo.classList.add('is-invalid');
+                    valido = false;
+                } else if (campo) {
+                    campo.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!valido) {
+                alert('Por favor complete todos los campos obligatorios del estudio');
+                return;
             }
-        }
-        
-        estudiosNuevos.insertAdjacentHTML('beforeend', inputsOcultos);
-        
-        // Mostrar en lista visible
-        const estadoText = document.querySelector(`#estado_instruccion option[value="${estudio.estado_instruccion}"]`).textContent;
-        const nivelText = document.querySelector(`#nivel_instruccion option[value="${estudio.nivel_instruccion}"]`).textContent;
-        const tituladoText = document.querySelector(`#titulado option[value="${estudio.titulado}"]`).textContent;
-        
-        const estudioHTML = `
-            <div class="estudio-item" id="estudio-nuevo-${index}">
-                <div class="item-header">
-                    <h6 class="mb-0">${estudio.carrera} - ${estadoText}</h6>
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-estudio-nuevo" 
-                            data-index="${index}">
-                        <i class="fas fa-trash"></i>
-                    </button>
+            
+            // Guardar estudio
+            const estudio = {
+                pais_estudio: document.getElementById('pais_estudio')?.value || '',
+                estado_instruccion: document.getElementById('estado_instruccion')?.value || '',
+                nivel_instruccion: document.getElementById('nivel_instruccion')?.value || '',
+                area: document.getElementById('area')?.value || '',
+                institucion_academica: document.getElementById('institucion_academica')?.value || '',
+                carrera: document.getElementById('carrera')?.value || '',
+                titulado: document.getElementById('titulado')?.value || '',
+                nro_titulo_academico: document.getElementById('nro_titulo_academico')?.value || '',
+                fecha_emision_titulo: document.getElementById('fecha_emision_titulo')?.value || '',
+                documento_respaldo: document.getElementById('documento_respaldo')?.value || '',
+                detalle_documento: document.getElementById('detalle_documento')?.value || '',
+                fecha_inicio: document.getElementById('fecha_inicio_estudio')?.value || '',
+                fecha_final: document.getElementById('fecha_final_estudio')?.value || ''
+            };
+            
+            // Agregar a lista oculta
+            const index = document.querySelectorAll('[name^="estudios_nuevos"]').length;
+            let inputsOcultos = '';
+            
+            for (const [key, value] of Object.entries(estudio)) {
+                if (value) {
+                    inputsOcultos += `<input type="hidden" name="estudios_nuevos[${index}][${key}]" value="${value}">`;
+                }
+            }
+            
+            if (estudiosNuevos) {
+                estudiosNuevos.insertAdjacentHTML('beforeend', inputsOcultos);
+            }
+            
+            // Mostrar en lista visible
+            const estadoText = document.querySelector(`#estado_instruccion option[value="${estudio.estado_instruccion}"]`)?.textContent || estudio.estado_instruccion;
+            const nivelText = document.querySelector(`#nivel_instruccion option[value="${estudio.nivel_instruccion}"]`)?.textContent || estudio.nivel_instruccion;
+            const tituladoText = document.querySelector(`#titulado option[value="${estudio.titulado}"]`)?.textContent || estudio.titulado;
+            const paisText = document.querySelector(`#pais_estudio option[value="${estudio.pais_estudio}"]`)?.textContent || estudio.pais_estudio;
+            
+            const estudioHTML = `
+                <div class="estudio-item" id="estudio-nuevo-${index}">
+                    <div class="item-header">
+                        <h6 class="mb-0">${estudio.carrera} - ${estadoText}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-estudio-nuevo" 
+                                data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small><strong>Institución:</strong> ${estudio.institucion_academica}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small><strong>Nivel:</strong> ${nivelText}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small><strong>Titulado:</strong> ${tituladoText}</small>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <small><strong>Periodo:</strong> ${estudio.fecha_inicio} a ${estudio.fecha_final || 'Actual'}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small><strong>País:</strong> ${paisText}</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <small><strong>Institución:</strong> ${estudio.institucion_academica}</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small><strong>Nivel:</strong> ${nivelText}</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small><strong>Titulado:</strong> ${tituladoText}</small>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-6">
-                        <small><strong>Periodo:</strong> ${estudio.fecha_inicio} a ${estudio.fecha_final || 'Actual'}</small>
-                    </div>
-                    <div class="col-md-6">
-                        <small><strong>País:</strong> ${document.querySelector(`#pais_estudio option[value="${estudio.pais_estudio}"]`).textContent}</small>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        listaEstudios.insertAdjacentHTML('beforeend', estudioHTML);
-        
-        // Limpiar formulario y ocultar
-        limpiarFormularioEstudio();
-        formNuevoEstudio.style.display = 'none';
-        btnAgregarEstudio.style.display = 'block';
-        
-        // Configurar evento eliminar
-        document.querySelector(`#estudio-nuevo-${index} .btn-eliminar-estudio-nuevo`)
-            .addEventListener('click', eliminarEstudioNuevo);
-    });
+            `;
+            
+            if (listaEstudios) {
+                listaEstudios.insertAdjacentHTML('beforeend', estudioHTML);
+            }
+            
+            // Limpiar formulario y ocultar
+            limpiarFormularioEstudio();
+            if (formNuevoEstudio) formNuevoEstudio.style.display = 'none';
+            if (btnAgregarEstudio) btnAgregarEstudio.style.display = 'block';
+            
+            // Configurar evento eliminar
+            const btnEliminar = document.querySelector(`#estudio-nuevo-${index} .btn-eliminar-estudio-nuevo`);
+            if (btnEliminar) {
+                btnEliminar.addEventListener('click', eliminarEstudioNuevo);
+            }
+        });
+    }
     
     function limpiarFormularioEstudio() {
-        document.getElementById('pais_estudio').value = '';
-        document.getElementById('estado_instruccion').value = '';
-        document.getElementById('nivel_instruccion').value = '';
-        document.getElementById('area').value = '';
-        document.getElementById('institucion_academica').value = '';
-        document.getElementById('carrera').value = '';
-        document.getElementById('titulado').value = '';
-        document.getElementById('nro_titulo_academico').value = '';
-        document.getElementById('fecha_emision_titulo').value = '';
-        document.getElementById('documento_respaldo').value = '';
-        document.getElementById('detalle_documento').value = '';
-        document.getElementById('fecha_inicio_estudio').value = '';
-        document.getElementById('fecha_final_estudio').value = '';
-        document.getElementById('campoTitulo').style.display = 'none';
-        document.getElementById('campoFechaTitulo').style.display = 'none';
+        const campos = [
+            'pais_estudio', 'estado_instruccion', 'nivel_instruccion', 'area',
+            'institucion_academica', 'carrera', 'titulado', 'nro_titulo_academico',
+            'fecha_emision_titulo', 'documento_respaldo', 'detalle_documento',
+            'fecha_inicio_estudio', 'fecha_final_estudio'
+        ];
+        
+        campos.forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) campo.value = '';
+        });
+        
+        const campoTitulo = document.getElementById('campoTitulo');
+        const campoFechaTitulo = document.getElementById('campoFechaTitulo');
+        if (campoTitulo) campoTitulo.style.display = 'none';
+        if (campoFechaTitulo) campoFechaTitulo.style.display = 'none';
     }
     
     function eliminarEstudioNuevo() {
@@ -833,12 +898,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Eliminar de la vista
-            document.getElementById(`estudio-nuevo-${index}`).remove();
+            const elemento = document.getElementById(`estudio-nuevo-${index}`);
+            if (elemento) elemento.remove();
         }
     }
-    
-    // 3. Configurar Cursos (similar a estudios)
-    // 4. Configurar Idiomas (similar a estudios)
     
     // Configurar eventos eliminar para elementos existentes
     document.querySelectorAll('.btn-eliminar-estudio').forEach(btn => {
@@ -850,37 +913,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputEliminar.type = 'hidden';
                 inputEliminar.name = 'estudios_eliminar[]';
                 inputEliminar.value = estudioId;
-                estudiosNuevos.appendChild(inputEliminar);
+                
+                if (estudiosNuevos) {
+                    estudiosNuevos.appendChild(inputEliminar);
+                }
                 
                 // Ocultar en la vista
-                document.getElementById(`estudio-${estudioId}`).style.display = 'none';
+                const elemento = document.getElementById(`estudio-${estudioId}`);
+                if (elemento) elemento.style.display = 'none';
             }
         });
     });
     
-    // Validación antes de enviar
-    document.getElementById('formFormacion').addEventListener('submit', function(e) {
-        // Validar bachillerato
-        const esBachillerVal = document.getElementById('es_bachiller').value;
-        if (!esBachillerVal) {
-            e.preventDefault();
-            alert('Por favor seleccione si es bachiller o no');
-            return;
-        }
-        
-        // Validar al menos un estudio superior (recomendado)
-        const tieneEstudios = document.querySelectorAll('.estudio-item').length > 0;
-        if (!tieneEstudios) {
-            if (!confirm('No ha agregado ningún estudio superior. ¿Desea continuar sin estudios?')) {
+    // ============================================
+    // 3. CONFIGURAR CURSOS (SIMPLIFICADO POR AHORA)
+    // ============================================
+    
+    // ============================================
+    // 4. CONFIGURAR IDIOMAS (SIMPLIFICADO POR AHORA)
+    // ============================================
+    
+    // ============================================
+    // 5. VALIDACIÓN ANTES DE ENVIAR
+    // ============================================
+    const formFormacion = document.getElementById('formFormacion');
+    if (formFormacion) {
+        formFormacion.addEventListener('submit', function(e) {
+            // Validar bachillerato
+            const esBachillerVal = document.getElementById('es_bachiller')?.value;
+            if (!esBachillerVal) {
                 e.preventDefault();
+                alert('Por favor seleccione si es bachiller o no');
                 return;
             }
-        }
-        
-        if (!confirm('¿Está seguro de guardar su formación académica?')) {
-            e.preventDefault();
-        }
-    });
+            
+            // Validar al menos un estudio superior (recomendado)
+            const tieneEstudios = document.querySelectorAll('.estudio-item').length > 0;
+            if (!tieneEstudios) {
+                if (!confirm('No ha agregado ningún estudio superior. ¿Desea continuar sin estudios?')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
+            if (!confirm('¿Está seguro de guardar su formación académica?')) {
+                e.preventDefault();
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
